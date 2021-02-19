@@ -35,20 +35,22 @@ public class App extends Application {
     TextField txtlitros;
     //tu tarea hacer
     Task copyWorker;
+
     public static void main(String[] args) {
-        launch();
-    }    
+        Application.launch(args);
+    }
+    
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Gasolinera");
+        primaryStage.setTitle("Instalador");
         Group root = new Group();
         Scene scene = new Scene(root, 330, 120, Color.WHITE);
 
         BorderPane mainPane = new BorderPane();
         root.getChildren().add(mainPane);
 
-        final Label label = new Label("Gasolina cargada");
-        precio.setText("$");
+        final Label label = new Label("Progresso");
+        precio.setText("Progresso...");
         final ProgressBar progressBar = new ProgressBar(0);
         final HBox h1 = new HBox();
         h1.setSpacing(5);
@@ -56,20 +58,26 @@ public class App extends Application {
         h1.getChildren().addAll(precio);
         mainPane.setTop(h1);
 
-        final HBox hb = new HBox();
-        hb.setSpacing(5);
-        hb.setAlignment(Pos.CENTER);
-        hb.getChildren().addAll(label, progressBar);
-        mainPane.setCenter(hb);
+
         final Label litroslbl= new Label("Litros de gasolina:");
          txtlitros= new TextField("");
-        final Button startButton = new Button("Start");
-        final Button cancelButton = new Button("Cancel");
+        final Button startButton = new Button("Iniciar");
+        final Button cancelButton = new Button("Cancelar");
         final HBox hb2 = new HBox();
         hb2.setSpacing(5);
         hb2.setAlignment(Pos.CENTER);
-        hb2.getChildren().addAll(litroslbl,txtlitros,startButton, cancelButton);
+        //hb2.getChildren().addAll(litroslbl,txtlitros,startButton, cancelButton);
+        hb2.getChildren().addAll(startButton, cancelButton);
         mainPane.setBottom(hb2);
+        //mainPane.setTop(hb2);
+
+        final HBox hb = new HBox();
+        hb.setSpacing(5);
+        hb.setAlignment(Pos.CENTER);
+        //hb.getChildren().addAll(label, progressBar);
+        hb.getChildren().addAll(progressBar);
+        mainPane.setCenter(hb);
+
 
         startButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -116,7 +124,7 @@ public class App extends Application {
                 litros=Integer.parseInt(txtlitros.getText());
 
 
-                    System.out.println("Litros:"+litros);
+                System.out.println("Litros:"+litros);
                 for (int i = 0; i < (litros/2); i++) {
                     Thread.sleep(1000);
 //                    updateMessage("2000 milliseconds");
