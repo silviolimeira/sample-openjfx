@@ -1,0 +1,14 @@
+
+ref:
+https://github.com/openjfx/samples/tree/master/CommandLine/Modular/Maven
+
+Windows
+If you run on Windows, follow these steps:
+
+cd CommandLine\Modular\Maven\hellofx
+mvn clean javafx:run
+To create and run a custom JRE:
+
+cd CommandLine/Modular/Maven/hellofx
+mvn clean javafx:jlink
+target\hellofx\bin\launcher
