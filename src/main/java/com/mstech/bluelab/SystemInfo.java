@@ -1,4 +1,4 @@
-package org.openjfx;
+package com.mstech.bluelab;
 
 public class SystemInfo {
 

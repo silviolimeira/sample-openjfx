@@ -2,6 +2,14 @@
 ref:
 https://github.com/openjfx/samples/tree/master/CommandLine/Modular/Maven
 
+ref:
+https://gist.github.com/carlos-silveira/7bc6df8be11cb754d2b1562b00277151
+
+refs:
+Sample with Fxml
+https://github.com/openjfx/samples/tree/master/IDE/NetBeans/Modular/Java/HelloFX/src/hellofx/classes/org/openjfx
+
+
 Windows
 If you run on Windows, follow these steps:
 
