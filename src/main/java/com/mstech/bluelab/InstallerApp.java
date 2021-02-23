@@ -46,6 +46,9 @@ public class InstallerApp extends Application {
     TextField txtlitros;
     //tu tarea hacer
     Task copyWorker;
+    Task copyClientWorker;
+    boolean cancelTreads = false;
+
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -116,6 +119,7 @@ public class InstallerApp extends Application {
                 new Thread(copyWorker).start();
                 preciofinal = Double.parseDouble(txtlitros.getText()) * 20;
                 precio.setText("$" + preciofinal);
+
             }
         });
         cancelButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -123,6 +127,10 @@ public class InstallerApp extends Application {
                 startButton.setDisable(false);
                 cancelButton.setDisable(true);
                 copyWorker.cancel(true);
+
+                cancelTreads = true;
+                copyClientWorker.cancel(true);
+
                 progressBar.progressProperty().unbind();
                 progressBar.setProgress(0);
                 System.out.println("cancelado");
@@ -137,22 +145,33 @@ public class InstallerApp extends Application {
             @Override
             protected Object call() throws Exception {
 
-                //litros=Integer.parseInt(txtlitros.getText());
-                litros = 10;
-                fileSize = 123456;
+                copyClientWorker = copyClientWorker();
+                Thread copyClientWorkerThread = new Thread(copyClientWorker);
+                copyClientWorkerThread.start();
+
+                synchronized(copyClientWorkerThread){
+                    try{
+                        System.out.println("Aguardando o b completar...");
+                        copyClientWorkerThread.wait();
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    System.out.println("Terminado.");
+                    updateProgress(1L, 1L);
+                }
+
+                return true;
+            }
+        };
+    }
+
+    public Task copyClientWorker() {
+        return new Task() {
+            @Override
+            protected Object call() throws Exception {
 
                 String workDir = System.getProperty("user.dir");
                 System.out.println("User dir: " + workDir);
-
-                Path path = Paths.get(workDir + File.separator + "installer.zip");
-                try {
-                    // size of a file (in bytes)
-                    long bytes = Files.size(path);
-                    System.out.println(String.format("%,d bytes", bytes));
-                    System.out.println(String.format("%,d kilobytes", bytes / 1024));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
 
 //                System.out.println("Litros:"+litros);
@@ -172,7 +191,7 @@ public class InstallerApp extends Application {
                 ZipInputStream zis = new
                         ZipInputStream(new FileInputStream(workDir + File.separator + "installer.zip"));
                 ZipEntry zipEntry = zis.getNextEntry();
-                while (zipEntry != null) {
+                while ((zipEntry != null) && (!cancelTreads)) {
                     File newFile = newFile(destDir, zipEntry);
                     if (zipEntry.isDirectory()) {
                         if (!newFile.isDirectory() && !newFile.mkdirs()) {
@@ -198,10 +217,14 @@ public class InstallerApp extends Application {
                 zis.closeEntry();
                 zis.close();
 
+                if (cancelTreads)
+                    return false;
+
                 return true;
             }
         };
     }
+
 
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
