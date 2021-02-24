@@ -58,7 +58,9 @@ public class InstallerApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Instalador");
 
+        //Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
         Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
+
         primaryStage.getIcons().add(image);
 
         Group root = new Group();
