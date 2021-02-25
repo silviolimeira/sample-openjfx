@@ -3,53 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mstech.bluelab</groupId>
     <artifactId>installer</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0</version>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>15</javafx.version>
-    </properties>
+    <modules>
+        <module>ui</module>
+    </modules>
 
-    <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
-    </organization>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-    </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.3</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <jlinkImageName>installer</jlinkImageName>
-                    <launcher>installer</launcher>
-                    <mainClass>com.mstech.bluelab.InstallerApp</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

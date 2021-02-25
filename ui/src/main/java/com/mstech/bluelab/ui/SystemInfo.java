@@ -1,4 +1,4 @@
-package com.mstech.bluelab;
+package com.mstech.bluelab.ui;
 
 public class SystemInfo {
 

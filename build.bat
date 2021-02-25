@@ -1,2 +1,5 @@
-cmd /c mvn clean javafx:jlink
-cmd /c target\installer\bin\installer
+call mvn clean install
+call cd ui
+pause
+call mvn javafx:jlink
+call target\installer\bin\installer
