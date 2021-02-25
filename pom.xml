@@ -8,6 +8,7 @@
 
     <modules>
         <module>ui</module>
+        <module>tools</module>
     </modules>
 
 

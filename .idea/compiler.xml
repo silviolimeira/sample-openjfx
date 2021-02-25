@@ -7,11 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ui" />
+        <module name="tools" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="com.mstech.bluelab.ui" target="11" />
       <module name="installer" target="1.5" />
+      <module name="tools" target="11" />
       <module name="ui" target="11" />
     </bytecodeTargetLevel>
   </component>

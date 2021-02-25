@@ -1,5 +1,6 @@
 package com.mstech.bluelab.ui;
 
+import com.mstech.bluelab.tools.Tools;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -153,6 +154,9 @@ public class InstallerApp extends Application {
                     System.out.println("Terminado.");
                     updateProgress(1L, 1L);
                 }
+
+                Tools tools = new Tools();
+                tools.hello();
 
                 return true;
             }
