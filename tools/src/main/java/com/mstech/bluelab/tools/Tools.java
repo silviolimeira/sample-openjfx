@@ -8,11 +8,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Tools {
 
+    private final static Logger LOGGER = Logger.getLogger(Tools.class.getName());
+
     public void hello() {
-        System.out.println("Hello");
+        //System.out.println("Hello");
+        LOGGER.log(Level.INFO, "Hello");
     }
 
     public static SecretKey getKeyFromPassword(String password, String salt)
