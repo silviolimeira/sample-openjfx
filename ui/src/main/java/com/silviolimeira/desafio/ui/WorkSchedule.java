@@ -1,5 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
+import com.silviolimeira.desafio.model.Person;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,16 +18,16 @@ import javafx.util.Callback;
 public class WorkSchedule extends VBox {
 
     private VBox vbox = new VBox();
-    private TableView<InstallerApp.Person> table = new TableView<InstallerApp.Person>();
+    private TableView<Person> table = new TableView<Person>();
 
-    private ObservableList<InstallerApp.Person> data =
+    private ObservableList<Person> data =
             FXCollections.observableArrayList();
 
     public WorkSchedule() {
 
     }
 
-    static class EditingCell extends TableCell<InstallerApp.Person, String> {
+    static class EditingCell extends TableCell<Person, String> {
 
         private TextField textField;
 
@@ -94,19 +95,19 @@ public class WorkSchedule extends VBox {
 
 
     private void addButtonToTable() {
-        TableColumn<InstallerApp.Person, Void> colBtn = new TableColumn("Button Column");
+        TableColumn<Person, Void> colBtn = new TableColumn("Button Column");
 
-        Callback<TableColumn<InstallerApp.Person, Void>, TableCell<InstallerApp.Person, Void>> cellFactory =
-                new Callback<TableColumn<InstallerApp.Person, Void>, TableCell<InstallerApp.Person, Void>>() {
+        Callback<TableColumn<Person, Void>, TableCell<Person, Void>> cellFactory =
+                new Callback<TableColumn<Person, Void>, TableCell<Person, Void>>() {
 
-            public TableCell<InstallerApp.Person, Void> call(final TableColumn<InstallerApp.Person, Void> param) {
-                final TableCell<InstallerApp.Person, Void> cell = new TableCell<InstallerApp.Person, Void>() {
+            public TableCell<Person, Void> call(final TableColumn<Person, Void> param) {
+                final TableCell<Person, Void> cell = new TableCell<Person, Void>() {
 
                     private final Button btn = new Button("Action");
 
                     {
                         btn.setOnAction((ActionEvent event) -> {
-                            InstallerApp.Person data = getTableView().getItems().get(getIndex());
+                            Person data = getTableView().getItems().get(getIndex());
                             System.out.println("selectedData: " + data.getFirstName());
                             getTableView().getItems().remove(getIndex());
                         });
@@ -148,13 +149,13 @@ public class WorkSchedule extends VBox {
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setMinWidth(100);
         firstNameCol.setCellValueFactory(
-                new PropertyValueFactory<InstallerApp.Person, String>("firstName"));
+                new PropertyValueFactory<Person, String>("firstName"));
         firstNameCol.setCellFactory(cellFactory);
         firstNameCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<InstallerApp.Person, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<InstallerApp.Person, String> t) {
-                        ((InstallerApp.Person) t.getTableView().getItems().get(
+                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
+                        ((Person) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
                         ).setFirstName(t.getNewValue());
                     }
@@ -165,13 +166,13 @@ public class WorkSchedule extends VBox {
         TableColumn lastNameCol = new TableColumn("Last Name");
         lastNameCol.setMinWidth(100);
         lastNameCol.setCellValueFactory(
-                new PropertyValueFactory<InstallerApp.Person, String>("lastName"));
+                new PropertyValueFactory<Person, String>("lastName"));
         lastNameCol.setCellFactory(cellFactory);
         lastNameCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<InstallerApp.Person, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<InstallerApp.Person, String> t) {
-                        ((InstallerApp.Person) t.getTableView().getItems().get(
+                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
+                        ((Person) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
                         ).setLastName(t.getNewValue());
                     }
@@ -181,13 +182,13 @@ public class WorkSchedule extends VBox {
         TableColumn emailCol = new TableColumn("Email");
         emailCol.setMinWidth(200);
         emailCol.setCellValueFactory(
-                new PropertyValueFactory<InstallerApp.Person, String>("email"));
+                new PropertyValueFactory<Person, String>("email"));
         emailCol.setCellFactory(cellFactory);
         emailCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<InstallerApp.Person, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<InstallerApp.Person, String> t) {
-                        ((InstallerApp.Person) t.getTableView().getItems().get(
+                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
+                        ((Person) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
                         ).setEmail(t.getNewValue());
                     }
@@ -216,7 +217,7 @@ public class WorkSchedule extends VBox {
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                data.add(new InstallerApp.Person(
+                data.add(new Person(
                         addFirstName.getText(),
                         addLastName.getText(),
                         addEmail.getText()));

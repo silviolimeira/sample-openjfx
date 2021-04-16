@@ -6,10 +6,12 @@ public class Person {
 
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty lastName;
+    private final SimpleStringProperty email;
 
-    public Person(String fName, String lName) {
+    public Person(String fName, String lName, String email) {
         this.firstName = new SimpleStringProperty(fName);
         this.lastName = new SimpleStringProperty(lName);
+        this.email = new SimpleStringProperty(email);
     }
 
     public String getFirstName() {
@@ -27,5 +29,14 @@ public class Person {
     public void setLastName(String fName) {
         lastName.set(fName);
     }
+
+    public String getEmail() {
+        return email.get();
+    }
+
+    public void setEmail(String fName) {
+        email.set(fName);
+    }
+
 
 }
