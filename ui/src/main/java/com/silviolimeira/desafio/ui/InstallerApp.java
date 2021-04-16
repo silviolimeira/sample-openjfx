@@ -1,6 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
-import com.silviolimeira.desafio.model.Person;
+import com.silviolimeira.desafio.model.Periodo;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -225,8 +225,8 @@ public class InstallerApp extends Application {
 //
 //        return destFile;
 //    }
-    private TableView<Person> table = new TableView<Person>();
-    private final ObservableList<Person> data =
+    private TableView<Periodo> table = new TableView<Periodo>();
+    private final ObservableList<Periodo> data =
             FXCollections.observableArrayList(
 //                    new Person("Jacob", "Smith", "jacob.smith@example.com"),
 //                    new Person("Isabella", "Johnson", "isabella.johnson@example.com"),
@@ -268,7 +268,7 @@ public class InstallerApp extends Application {
         stage.show();
     }
 
-    class EditingCell extends TableCell<Person, String> {
+    class EditingCell extends TableCell<Periodo, String> {
 
         private TextField textField;
 

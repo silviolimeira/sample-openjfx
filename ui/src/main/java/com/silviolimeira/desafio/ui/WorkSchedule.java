@@ -1,6 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
-import com.silviolimeira.desafio.model.Person;
+import com.silviolimeira.desafio.model.Periodo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,16 +18,16 @@ import javafx.util.Callback;
 public class WorkSchedule extends VBox {
 
     private VBox vbox = new VBox();
-    private TableView<Person> table = new TableView<Person>();
+    private TableView<Periodo> table = new TableView<Periodo>();
 
-    private ObservableList<Person> data =
+    private ObservableList<Periodo> data =
             FXCollections.observableArrayList();
 
     public WorkSchedule() {
 
     }
 
-    static class EditingCell extends TableCell<Person, String> {
+    static class EditingCell extends TableCell<Periodo, String> {
 
         private TextField textField;
 
@@ -95,20 +95,20 @@ public class WorkSchedule extends VBox {
 
 
     private void addButtonToTable() {
-        TableColumn<Person, Void> colBtn = new TableColumn("Button Column");
+        TableColumn<Periodo, Void> colBtn = new TableColumn("Button Column");
 
-        Callback<TableColumn<Person, Void>, TableCell<Person, Void>> cellFactory =
-                new Callback<TableColumn<Person, Void>, TableCell<Person, Void>>() {
+        Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>> cellFactory =
+                new Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>>() {
 
-            public TableCell<Person, Void> call(final TableColumn<Person, Void> param) {
-                final TableCell<Person, Void> cell = new TableCell<Person, Void>() {
+            public TableCell<Periodo, Void> call(final TableColumn<Periodo, Void> param) {
+                final TableCell<Periodo, Void> cell = new TableCell<Periodo, Void>() {
 
                     private final Button btn = new Button("Action");
 
                     {
                         btn.setOnAction((ActionEvent event) -> {
-                            Person data = getTableView().getItems().get(getIndex());
-                            System.out.println("selectedData: " + data.getFirstName());
+                            Periodo data = getTableView().getItems().get(getIndex());
+                            System.out.println("selectedData: " + data.getEntrada());
                             getTableView().getItems().remove(getIndex());
                         });
                     }
@@ -149,15 +149,15 @@ public class WorkSchedule extends VBox {
         TableColumn firstNameCol = new TableColumn("First Name");
         firstNameCol.setMinWidth(100);
         firstNameCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("firstName"));
+                new PropertyValueFactory<Periodo, String>("entrada"));
         firstNameCol.setCellFactory(cellFactory);
         firstNameCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Periodo, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
-                        ((Person) t.getTableView().getItems().get(
+                    public void handle(TableColumn.CellEditEvent<Periodo, String> t) {
+                        ((Periodo) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
-                        ).setFirstName(t.getNewValue());
+                        ).setEntrada(t.getNewValue());
                     }
                 }
         );
@@ -166,31 +166,15 @@ public class WorkSchedule extends VBox {
         TableColumn lastNameCol = new TableColumn("Last Name");
         lastNameCol.setMinWidth(100);
         lastNameCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("lastName"));
+                new PropertyValueFactory<Periodo, String>("saida"));
         lastNameCol.setCellFactory(cellFactory);
         lastNameCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
+                new EventHandler<TableColumn.CellEditEvent<Periodo, String>>() {
                     @Override
-                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
-                        ((Person) t.getTableView().getItems().get(
+                    public void handle(TableColumn.CellEditEvent<Periodo, String> t) {
+                        ((Periodo) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
-                        ).setLastName(t.getNewValue());
-                    }
-                }
-        );
-
-        TableColumn emailCol = new TableColumn("Email");
-        emailCol.setMinWidth(200);
-        emailCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("email"));
-        emailCol.setCellFactory(cellFactory);
-        emailCol.setOnEditCommit(
-                new EventHandler<TableColumn.CellEditEvent<Person, String>>() {
-                    @Override
-                    public void handle(TableColumn.CellEditEvent<Person, String> t) {
-                        ((Person) t.getTableView().getItems().get(
-                                t.getTablePosition().getRow())
-                        ).setEmail(t.getNewValue());
+                        ).setSaida(t.getNewValue());
                     }
                 }
         );
@@ -200,7 +184,7 @@ public class WorkSchedule extends VBox {
 
 
         table.setItems(data);
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
+        table.getColumns().addAll(firstNameCol, lastNameCol);
         addButtonToTable();
 
         final TextField addFirstName = new TextField();
@@ -209,26 +193,22 @@ public class WorkSchedule extends VBox {
         final TextField addLastName = new TextField();
         addLastName.setMaxWidth(lastNameCol.getPrefWidth());
         addLastName.setPromptText("Last Name");
-        final TextField addEmail = new TextField();
-        addEmail.setMaxWidth(emailCol.getPrefWidth());
-        addEmail.setPromptText("Email");
 
         final Button addButton = new Button("Add");
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                data.add(new Person(
+                data.add(new Periodo(
                         addFirstName.getText(),
-                        addLastName.getText(),
-                        addEmail.getText()));
+                        addLastName.getText()
+                        ));
                 addFirstName.clear();
                 addLastName.clear();
-                addEmail.clear();
             }
         });
 
         final HBox hb = new HBox();
-        hb.getChildren().addAll(addFirstName, addLastName, addEmail, addButton);
+        hb.getChildren().addAll(addFirstName, addLastName, addButton);
         hb.setSpacing(3);
 
 
