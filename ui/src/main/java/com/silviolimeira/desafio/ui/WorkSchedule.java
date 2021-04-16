@@ -1,8 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
 import com.silviolimeira.desafio.model.Periodo;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,73 +25,6 @@ public class WorkSchedule extends VBox {
 
     }
 
-    static class EditingCell extends TableCell<Periodo, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>(){
-                @Override
-                public void changed(ObservableValue<? extends Boolean> arg0,
-                                    Boolean arg1, Boolean arg2) {
-                    if (!arg2) {
-                        commitEdit(textField.getText());
-                    }
-                }
-            });
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    }
-
-
     private void addButtonToTable() {
         TableColumn<Periodo, Void> colBtn = new TableColumn("Button Column");
 
@@ -103,7 +34,7 @@ public class WorkSchedule extends VBox {
             public TableCell<Periodo, Void> call(final TableColumn<Periodo, Void> param) {
                 final TableCell<Periodo, Void> cell = new TableCell<Periodo, Void>() {
 
-                    private final Button btn = new Button("Action");
+                    private final Button btn = new Button("Deletar");
 
                     {
                         btn.setOnAction((ActionEvent event) -> {
