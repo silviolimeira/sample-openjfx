@@ -1,4 +1,4 @@
-package com.mstech.bluelab.ui;
+package com.silviolimeira.desafio.ui;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -47,7 +47,6 @@ public class InstallerApp extends Application {
 //
 //        //Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
 //        Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
-//
 //        primaryStage.getIcons().add(image);
 //
 //        Group root = new Group();

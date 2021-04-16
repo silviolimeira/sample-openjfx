@@ -1,4 +1,4 @@
-package com.mstech.bluelab.ui;
+package com.silviolimeira.desafio.ui;
 
 public class SystemInfo {
 

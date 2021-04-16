@@ -1,6 +1,6 @@
-module com.mstech.bluelab.ui {
+module com.silviolimeira.desafio.ui {
     requires javafx.graphics;
     requires javafx.controls;
-    requires com.mstech.bluelab.tools;
-    exports com.mstech.bluelab.ui;
+    requires com.silviolimeira.desafio.tools;
+    exports com.silviolimeira.desafio.ui;
 }

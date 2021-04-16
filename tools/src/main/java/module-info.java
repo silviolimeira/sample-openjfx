@@ -1,4 +1,4 @@
-module com.mstech.bluelab.tools {
+module com.silviolimeira.desafio.tools {
     requires java.logging;
-    exports com.mstech.bluelab.tools;
+    exports com.silviolimeira.desafio.tools;
 }
