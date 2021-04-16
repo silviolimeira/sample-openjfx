@@ -26,7 +26,7 @@ public class WorkSchedule extends VBox {
     }
 
     private void addButtonToTable() {
-        TableColumn<Periodo, Void> colBtn = new TableColumn("Button Column");
+        TableColumn<Periodo, Void> colBtn = new TableColumn("");
 
         Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>> cellFactory =
                 new Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>>() {
@@ -77,12 +77,12 @@ public class WorkSchedule extends VBox {
                     }
                 };
 
-        TableColumn firstNameCol = new TableColumn("First Name");
-        firstNameCol.setMinWidth(100);
-        firstNameCol.setCellValueFactory(
+        TableColumn entradaCol = new TableColumn("Entrada");
+        entradaCol.setMinWidth(100);
+        entradaCol.setCellValueFactory(
                 new PropertyValueFactory<Periodo, String>("entrada"));
-        firstNameCol.setCellFactory(cellFactory);
-        firstNameCol.setOnEditCommit(
+        entradaCol.setCellFactory(cellFactory);
+        entradaCol.setOnEditCommit(
                 new EventHandler<TableColumn.CellEditEvent<Periodo, String>>() {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Periodo, String> t) {
@@ -94,12 +94,12 @@ public class WorkSchedule extends VBox {
         );
 
 
-        TableColumn lastNameCol = new TableColumn("Last Name");
-        lastNameCol.setMinWidth(100);
-        lastNameCol.setCellValueFactory(
+        TableColumn saidaCol = new TableColumn("Saída");
+        saidaCol.setMinWidth(100);
+        saidaCol.setCellValueFactory(
                 new PropertyValueFactory<Periodo, String>("saida"));
-        lastNameCol.setCellFactory(cellFactory);
-        lastNameCol.setOnEditCommit(
+        saidaCol.setCellFactory(cellFactory);
+        saidaCol.setOnEditCommit(
                 new EventHandler<TableColumn.CellEditEvent<Periodo, String>>() {
                     @Override
                     public void handle(TableColumn.CellEditEvent<Periodo, String> t) {
@@ -115,31 +115,31 @@ public class WorkSchedule extends VBox {
 
 
         table.setItems(data);
-        table.getColumns().addAll(firstNameCol, lastNameCol);
+        table.getColumns().addAll(entradaCol, saidaCol);
         addButtonToTable();
 
-        final TextField addFirstName = new TextField();
-        addFirstName.setPromptText("First Name");
-        addFirstName.setMaxWidth(firstNameCol.getPrefWidth());
-        final TextField addLastName = new TextField();
-        addLastName.setMaxWidth(lastNameCol.getPrefWidth());
-        addLastName.setPromptText("Last Name");
+        final TextField addEntrada = new TextField();
+        addEntrada.setPromptText("Entrada");
+        addEntrada.setMaxWidth(entradaCol.getPrefWidth());
+        final TextField addSaida = new TextField();
+        addSaida.setMaxWidth(saidaCol.getPrefWidth());
+        addSaida.setPromptText("Saída");
 
-        final Button addButton = new Button("Add");
+        final Button addButton = new Button("Adicionar");
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 data.add(new Periodo(
-                        addFirstName.getText(),
-                        addLastName.getText()
+                        addEntrada.getText(),
+                        addSaida.getText()
                         ));
-                addFirstName.clear();
-                addLastName.clear();
+                addEntrada.clear();
+                addSaida.clear();
             }
         });
 
         final HBox hb = new HBox();
-        hb.getChildren().addAll(addFirstName, addLastName, addButton);
+        hb.getChildren().addAll(addEntrada, addSaida, addButton);
         hb.setSpacing(3);
 
 
