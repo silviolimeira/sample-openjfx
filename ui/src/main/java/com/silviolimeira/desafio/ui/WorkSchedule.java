@@ -1,6 +1,8 @@
 package com.silviolimeira.desafio.ui;
 
 import com.silviolimeira.desafio.model.Periodo;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +22,7 @@ public class WorkSchedule extends VBox {
 
     private ObservableList<Periodo> data =
             FXCollections.observableArrayList();
+    private int maxLines = 3;
 
     public WorkSchedule() {
 
@@ -64,9 +67,15 @@ public class WorkSchedule extends VBox {
 
     }
 
-    public VBox getInstance() {
+    public VBox getInstance(String title) {
+        return this.getInstance(title, Integer.MAX_VALUE);
+    }
 
-        final Label label = new Label("Horário de Trabalho");
+    public VBox getInstance(String title, int maxLines) {
+
+        this.maxLines = maxLines;
+
+        final Label label = new Label(title);
         label.setFont(new Font("Arial", 20));
 
         table.setEditable(true);
@@ -110,17 +119,28 @@ public class WorkSchedule extends VBox {
                 }
         );
 
-        TableColumn remove = new TableColumn("Email");
-        remove.setMinWidth(200);
-
-
         table.setItems(data);
         table.getColumns().addAll(entradaCol, saidaCol);
         addButtonToTable();
 
         final TextField addEntrada = new TextField();
+        // force the field to be numeric only
+        addEntrada.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                String newValue) {
+                if (addEntrada.getText().length() > 5) {
+                    String s = addEntrada.getText().substring(0, 5);
+                    addEntrada.setText(s);
+                }
+                if (!newValue.matches("\\d*")) {
+                    addEntrada.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
         addEntrada.setPromptText("Entrada");
         addEntrada.setMaxWidth(entradaCol.getPrefWidth());
+
         final TextField addSaida = new TextField();
         addSaida.setMaxWidth(saidaCol.getPrefWidth());
         addSaida.setPromptText("Saída");
@@ -129,10 +149,11 @@ public class WorkSchedule extends VBox {
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
+                if (table.getItems().size() >= maxLines) return;
                 data.add(new Periodo(
                         addEntrada.getText(),
                         addSaida.getText()
-                        ));
+                ));
                 addEntrada.clear();
                 addSaida.clear();
             }
@@ -142,10 +163,12 @@ public class WorkSchedule extends VBox {
         hb.getChildren().addAll(addEntrada, addSaida, addButton);
         hb.setSpacing(3);
 
+        Hour hour = new Hour();
 
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table, hb);
+        //vbox.getChildren().addAll(label, table, hb);
+        vbox.getChildren().addAll(label, table, hour.getInstance("Entrada:"));
         vbox.setMaxHeight(200.0);
 
         return vbox;

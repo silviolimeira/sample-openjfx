@@ -258,9 +258,9 @@ public class InstallerApp extends Application {
         WorkSchedule workSchedule1 = new WorkSchedule();
         WorkSchedule workSchedule2 = new WorkSchedule();
 
-        mainPane.setTop(workSchedule.getInstance());
-        mainPane.setBottom(workSchedule1.getInstance());
-        mainPane.setCenter(workSchedule2.getInstance());
+        mainPane.setTop(workSchedule.getInstance("Horário de Trabalho", 3));
+        mainPane.setCenter(workSchedule1.getInstance("Marcações Feitas"));
+        mainPane.setBottom(workSchedule2.getInstance("Atraso"));
 
         //((Group) scene.getRoot()).getChildren().addAll(workSchedule.getInstance(), workSchedule1.getInstance());
 
