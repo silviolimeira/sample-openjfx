@@ -248,6 +248,24 @@ public class InstallerApp extends Application {
         launch(args);
     }
 
+    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
+
+        int max = horarioTrabalho.getTable().getItems().size();
+        for (int i = 0; i < max; i++) {
+            Periodo periodo = (Periodo)horarioTrabalho.getTable().getItems().get(i);
+            //horaExtra.getTable().getItems().add(txt);
+            horaExtra.getTable().getItems().add(periodo);
+
+            int maxMarcacoes = marcacoesFeitas.getTable().getItems().size();
+            for (int n = 0; n < maxMarcacoes; n++) {
+                Periodo marcacao = (Periodo)marcacoesFeitas.getTable().getItems().get(i);
+                horaExtra.getTable().getItems().add(marcacao);
+
+            }
+
+        }
+
+    }
 
     public Task taskSubtracaoEntreHorarios() {
         return new Task() {
@@ -262,13 +280,7 @@ public class InstallerApp extends Application {
                     Thread.sleep(1000);
                     System.out.println(horarioTrabalho.getTable().getItems().size());
 
-                    int max = horarioTrabalho.getTable().getItems().size();
-                    for (int i = 0; i < max; i++) {
-
-                        Periodo txt = (Periodo)horarioTrabalho.getTable().getItems().get(i);
-
-                        horaExtra.getTable().getItems().add(txt);
-                    }
+                    subtracaoEntreHorarios(horarioTrabalho, marcacoesFeitas, atraso, horaExtra);
 
                 }
 
