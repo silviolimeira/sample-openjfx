@@ -41,8 +41,8 @@ public class InstallerApp extends Application {
 //    public void start(Stage primaryStageprimaryStage) {
 //        primaryStage.setTitle("Instalador");
 //
-//        //Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
-//        Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
+//        //Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
+//        Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
 //        primaryStage.getIcons().add(image);
 //
 //        Group root = new Group();
@@ -242,7 +242,7 @@ public class InstallerApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        Image image = new Image(InstallerApp.class.getResourceAsStream("/images/bluelab-installer.png"));
+        Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
         stage.getIcons().add(image);
         stage.setTitle("Desafio");
         stage.setWidth(800);
