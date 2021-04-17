@@ -5,79 +5,27 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-public class WorkSchedule {
+public class WorkScheduleReport {
 
     private VBox vbox = new VBox();
     private TableView<Periodo> table = new TableView<Periodo>();
 
     private ObservableList<Periodo> data =
             FXCollections.observableArrayList();
-    private int maxLines = 3;
 
-    public WorkSchedule() {
-
-    }
-
-    public ObservableList<Periodo> getData() {
-        return this.data;
-    }
-
-    private void addButtonToTable() {
-        TableColumn<Periodo, Void> colBtn = new TableColumn("");
-
-        Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>> cellFactory =
-                new Callback<TableColumn<Periodo, Void>, TableCell<Periodo, Void>>() {
-
-            public TableCell<Periodo, Void> call(final TableColumn<Periodo, Void> param) {
-                final TableCell<Periodo, Void> cell = new TableCell<Periodo, Void>() {
-
-                    private final Button btn = new Button("Deletar");
-
-                    {
-                        btn.setOnAction((ActionEvent event) -> {
-                            Periodo data = getTableView().getItems().get(getIndex());
-                            System.out.println("selectedData: " + data.getEntrada());
-                            getTableView().getItems().remove(getIndex());
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(btn);
-                        }
-                    }
-                };
-                return cell;
-            }
-        };
-
-        colBtn.setCellFactory(cellFactory);
-
-        table.getColumns().add(colBtn);
+    public WorkScheduleReport() {
 
     }
 
     public VBox getComponent(String title) {
-        return this.getComponent(title, Integer.MAX_VALUE);
-    }
-
-    public VBox getComponent(String title, int maxLines) {
-
-        this.maxLines = maxLines;
 
         final Label label = new Label(title);
         label.setFont(new Font("Arial", 20));
@@ -125,7 +73,6 @@ public class WorkSchedule {
 
         table.setItems(data);
         table.getColumns().addAll(entradaCol, saidaCol);
-        addButtonToTable();
 
         final TextField addEntrada = new TextField();
         // force the field to be numeric only
@@ -149,39 +96,17 @@ public class WorkSchedule {
         addSaida.setMaxWidth(saidaCol.getPrefWidth());
         addSaida.setPromptText("Saída");
 
-        final Button addButton = new Button("Adicionar");
 
-        //final HBox hb = new HBox();
-        //hb.getChildren().addAll(addEntrada, addSaida, addButton);
-        //hb.setSpacing(3);
-
-        Hour entrada = new Hour();
-        Hour saida = new Hour();
-        addButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                if (table.getItems().size() >= maxLines) return;
-                if (entrada.isValid() && saida.isValid()) {
-                    data.add(new Periodo(
-                            entrada.toString(),
-                            saida.toString()
-                    ));
-                    entrada.clear();
-                    saida.clear();
-                }
-            }
-        });
-
-        final HBox hb = new HBox();
-        hb.setSpacing(10);
-        hb.getChildren().addAll(entrada.getComponent("Entrada:"), saida.getComponent("Saída:"), addButton);
+//        final HBox hb = new HBox();
+//        hb.setSpacing(10);
+//        hb.getChildren().addAll(entrada.getComponent("Entrada:"), saida.getComponent("Saída:"), addButton);
 
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
-        //vbox.getChildren().addAll(label, table, hb);
-        vbox.getChildren().addAll(label, table, hb);
+        vbox.getChildren().addAll(label, table);
 
         vbox.setMaxHeight(200.0);
+        vbox.setMaxWidth(230.0);
 
         return vbox;
 

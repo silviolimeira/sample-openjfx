@@ -254,13 +254,18 @@ public class InstallerApp extends Application {
         BorderPane mainPane = new BorderPane();
         root.getChildren().add(mainPane);
 
-        WorkSchedule workSchedule = new WorkSchedule();
-        WorkSchedule workSchedule1 = new WorkSchedule();
-        WorkSchedule workSchedule2 = new WorkSchedule();
+        WorkSchedule horarioTrabalho = new WorkSchedule();
+        WorkSchedule marcacoesFeitas = new WorkSchedule();
+        WorkScheduleReport atraso = new WorkScheduleReport();
+        WorkScheduleReport horaExtra = new WorkScheduleReport();
 
-        mainPane.setTop(workSchedule.getInstance("Horário de Trabalho", 3));
-        mainPane.setCenter(workSchedule1.getInstance("Marcações Feitas"));
-        mainPane.setBottom(workSchedule2.getInstance("Atraso"));
+        mainPane.setTop(horarioTrabalho.getComponent("Horário de Trabalho", 3));
+        mainPane.setCenter(marcacoesFeitas.getComponent("Marcações Feitas"));
+
+        final HBox hb = new HBox();
+        hb.getChildren().addAll(atraso.getComponent("Atraso"), horaExtra.getComponent("Hora Extra"));
+        hb.setSpacing(3);
+        mainPane.setBottom(hb);
 
         //((Group) scene.getRoot()).getChildren().addAll(workSchedule.getInstance(), workSchedule1.getInstance());
 
