@@ -25,6 +25,10 @@ public class WorkScheduleReport {
 
     }
 
+    public TableView<Periodo> getTable() {
+        return this.table;
+    }
+
     public VBox getComponent(String title) {
 
         final Label label = new Label(title);

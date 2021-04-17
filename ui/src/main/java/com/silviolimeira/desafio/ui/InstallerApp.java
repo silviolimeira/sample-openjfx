@@ -2,20 +2,20 @@ package com.silviolimeira.desafio.ui;
 
 import com.silviolimeira.desafio.model.Periodo;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * JavaFX App
@@ -225,6 +225,14 @@ public class InstallerApp extends Application {
 //
 //        return destFile;
 //    }
+
+    WorkSchedule horarioTrabalho;
+    WorkSchedule marcacoesFeitas;
+    WorkScheduleReport atraso;
+    WorkScheduleReport horaExtra;
+
+    private boolean cancelTreads = false;
+
     private TableView<Periodo> table = new TableView<Periodo>();
     private final ObservableList<Periodo> data =
             FXCollections.observableArrayList(
@@ -240,6 +248,39 @@ public class InstallerApp extends Application {
         launch(args);
     }
 
+
+    public Task taskSubtracaoEntreHorarios() {
+        return new Task() {
+            @Override
+            protected Object call() throws Exception {
+
+                String workDir = System.getProperty("user.dir");
+                System.out.println("User dir: " + workDir);
+
+                while (!cancelTreads) {
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.println(horarioTrabalho.getTable().getItems().size());
+
+                    int max = horarioTrabalho.getTable().getItems().size();
+                    for (int i = 0; i < max; i++) {
+
+                        Periodo txt = (Periodo)horarioTrabalho.getTable().getItems().get(i);
+
+                        horaExtra.getTable().getItems().add(txt);
+                    }
+
+                }
+
+                if (cancelTreads)
+                    return false;
+
+                return true;
+            }
+        };
+    }
+
+
     @Override
     public void start(Stage stage) {
         Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
@@ -254,10 +295,10 @@ public class InstallerApp extends Application {
         BorderPane mainPane = new BorderPane();
         root.getChildren().add(mainPane);
 
-        WorkSchedule horarioTrabalho = new WorkSchedule();
-        WorkSchedule marcacoesFeitas = new WorkSchedule();
-        WorkScheduleReport atraso = new WorkScheduleReport();
-        WorkScheduleReport horaExtra = new WorkScheduleReport();
+        horarioTrabalho = new WorkSchedule();
+        marcacoesFeitas = new WorkSchedule();
+        atraso = new WorkScheduleReport();
+        horaExtra = new WorkScheduleReport();
 
         mainPane.setTop(horarioTrabalho.getComponent("Horário de Trabalho", 3));
         mainPane.setCenter(marcacoesFeitas.getComponent("Marcações Feitas"));
@@ -268,74 +309,21 @@ public class InstallerApp extends Application {
         mainPane.setBottom(hb);
 
         //((Group) scene.getRoot()).getChildren().addAll(workSchedule.getInstance(), workSchedule1.getInstance());
+        System.out.println("subtracao");
+
+        new Thread(taskSubtracaoEntreHorarios()).start();
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                cancelTreads = true;
+                Platform.exit();
+                System.exit(0);
+            }
+        });
 
         stage.setScene(scene);
         stage.show();
     }
 
-    class EditingCell extends TableCell<Periodo, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        public void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap()* 2);
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>(){
-                @Override
-                public void changed(ObservableValue<? extends Boolean> arg0,
-                                    Boolean arg1, Boolean arg2) {
-                    if (!arg2) {
-                        commitEdit(textField.getText());
-                    }
-                }
-            });
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    }
 }

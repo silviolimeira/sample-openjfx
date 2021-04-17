@@ -32,6 +32,10 @@ public class WorkSchedule {
         return this.data;
     }
 
+    public TableView<Periodo> getTable() {
+        return this.table;
+    }
+
     private void addButtonToTable() {
         TableColumn<Periodo, Void> colBtn = new TableColumn("");
 
