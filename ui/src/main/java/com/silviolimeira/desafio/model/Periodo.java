@@ -1,35 +1,37 @@
 package com.silviolimeira.desafio.model;
 
-import javafx.beans.property.SimpleStringProperty;
-
-public class Periodo {
+public class Periodo implements Comparable<Periodo> {
 
     private String entrada;
     private String saida;
 
     public Periodo(String entrada, String saida) {
-        this.entrada = entrada; new SimpleStringProperty(entrada);
-        this.saida = saida; new SimpleStringProperty(saida);
+        this.entrada = entrada;
+        this.saida = saida;
     }
 
     public String getEntrada() {
-        return entrada; //return entrada.get();
+        return entrada;
     }
 
     public void setEntrada(String entrada) {
-        this.entrada = entrada; //entrada.set(fName);
+        this.entrada = entrada;
     }
 
     public String getSaida() {
-        return saida; //return saida.get();
+        return saida;
     }
 
     public void setSaida(String saida) {
-        saida = saida; //saida.set(fName);
+        this.saida = saida;
     }
 
     public String toString() {
         return this.entrada + " " + this.saida;
     }
 
+    @Override
+    public int compareTo(Periodo o) {
+        return o.toString().compareToIgnoreCase(this.toString());
+    }
 }

@@ -16,9 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 public class WorkSchedule {
 
@@ -41,29 +39,19 @@ public class WorkSchedule {
         return this.table;
     }
 
-    public SortedList<String> getTableAsList() {
+    public SortedList<Periodo> getTableAsList() {
 
-        List<String> strings = new ArrayList<String>();
-        int max = this.table.getItems().size();
-        for (int i = 0; i < max; i++) {
-            strings.add(this.table.getItems().get(i).toString());
-        }
-        //Collections.sort(strings);
+        ObservableList<Periodo> stringObservableList =
+        FXCollections.observableArrayList(
+                this.table.getItems());
 
-        for (String s : strings) {
-            System.out.println(s);
-        }
-
-                ObservableList<String> stringObservableList =
-                FXCollections.observableArrayList(
-                        strings);
-
-        SortedList<String> sortedList = new SortedList<String>(
-                stringObservableList, new Comparator<String>() {
+        SortedList<Periodo> sortedList = new SortedList<Periodo>(
+                stringObservableList, new Comparator<Periodo>() {
             @Override
-            public int compare(String s, String t1) {
-                return s.compareToIgnoreCase(t1);
+            public int compare(Periodo o1, Periodo o2) {
+                return o1.toString().compareToIgnoreCase(o2.toString());
             }
+
         });
 
         return sortedList;
@@ -85,6 +73,7 @@ public class WorkSchedule {
                         btn.setOnAction((ActionEvent event) -> {
                             Periodo data = getTableView().getItems().get(getIndex());
                             System.out.println("selectedData: " + data.getEntrada());
+                            data.getSaida();
                             getTableView().getItems().remove(getIndex());
                         });
                     }
