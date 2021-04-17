@@ -253,6 +253,23 @@ public class InstallerApp extends Application {
         for (Periodo s : horarioTrabalho.getTableAsList()) {
             System.out.println(">" + s.toString());
         }
+        Periodo p1 = null;
+        Periodo p2 = null;
+        Periodo p3 = null;
+        System.out.println("***" + horarioTrabalho.getTable().getItems().size());
+        if (horarioTrabalho.getTable().getItems().size() >=1) {
+            p1 = horarioTrabalho.getTable().getItems().get(0);
+            System.out.println("p1:" + p1.toString());
+        }
+        if (horarioTrabalho.getTable().getItems().size() >=2) {
+            p2 = horarioTrabalho.getTable().getItems().get(1);
+            System.out.println("p2:" + p2.toString());
+        }
+        if (horarioTrabalho.getTable().getItems().size() ==3) {
+            p3 = horarioTrabalho.getTable().getItems().get(2);
+            System.out.println("p3:" + p3.toString());
+        }
+
 
         int max = horarioTrabalho.getTable().getItems().size();
         for (int i = 0; i < max; i++) {
