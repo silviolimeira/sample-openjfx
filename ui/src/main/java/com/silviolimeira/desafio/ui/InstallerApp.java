@@ -250,6 +250,21 @@ public class InstallerApp extends Application {
 
     public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
 
+//        ObservableList<String> stringObservableList =
+//                FXCollections.observableArrayList(
+//                        horarioTrabalho.getTableAsList());
+//
+//        SortedList<String> sortedList = new SortedList<String>(
+//                stringObservableList, new Comparator<String>() {
+//            @Override
+//            public int compare(String s, String t1) {
+//                return s.compareToIgnoreCase(t1);
+//            }
+//        });
+        for (String s : horarioTrabalho.getTableAsList()) {
+            System.out.println(">" + s);
+        }
+
         int max = horarioTrabalho.getTable().getItems().size();
         for (int i = 0; i < max; i++) {
             Periodo periodo = (Periodo)horarioTrabalho.getTable().getItems().get(i);
