@@ -250,24 +250,24 @@ public class InstallerApp extends Application {
 
     public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
 
-        for (Periodo s : horarioTrabalho.getTableAsList()) {
-            System.out.println(">" + s.toString());
-        }
+//        for (Periodo s : horarioTrabalho.getTableAsList()) {
+//            System.out.println(">" + s.toString());
+//        }
         Periodo p1 = null;
         Periodo p2 = null;
         Periodo p3 = null;
-        System.out.println("***" + horarioTrabalho.getTable().getItems().size());
+        //System.out.println("***" + horarioTrabalho.getTable().getItems().size());
         if (horarioTrabalho.getTable().getItems().size() >=1) {
             p1 = horarioTrabalho.getTable().getItems().get(0);
-            System.out.println("p1:" + p1.toString());
+            //System.out.println("p1:" + p1.toString());
         }
         if (horarioTrabalho.getTable().getItems().size() >=2) {
             p2 = horarioTrabalho.getTable().getItems().get(1);
-            System.out.println("p2:" + p2.toString());
+            //System.out.println("p2:" + p2.toString());
         }
         if (horarioTrabalho.getTable().getItems().size() ==3) {
             p3 = horarioTrabalho.getTable().getItems().get(2);
-            System.out.println("p3:" + p3.toString());
+            //System.out.println("p3:" + p3.toString());
         }
 
 
@@ -342,7 +342,7 @@ public class InstallerApp extends Application {
         mainPane.setBottom(hb);
 
         //((Group) scene.getRoot()).getChildren().addAll(workSchedule.getInstance(), workSchedule1.getInstance());
-        System.out.println("subtracao");
+        //System.out.println("subtracao");
 
         new Thread(taskSubtracaoEntreHorarios()).start();
 

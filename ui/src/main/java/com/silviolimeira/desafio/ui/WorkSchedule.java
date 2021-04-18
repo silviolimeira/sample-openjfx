@@ -189,12 +189,14 @@ public class WorkSchedule {
             public void handle(ActionEvent e) {
                 if (table.getItems().size() >= maxLines) return;
                 if (entrada.isValid() && saida.isValid()) {
-                    data.add(new Periodo(
-                            entrada.toString(),
-                            saida.toString()
-                    ));
-                    entrada.clear();
-                    saida.clear();
+                    Periodo periodo = new Periodo(entrada.toString(),saida.toString());
+                    if (!periodo.testaIntersecaoPeriodos(periodo, getTableAsList())) {
+                        System.out.println("testa periodo: " + periodo.testaIntersecaoPeriodos(periodo, getTableAsList()));
+                    } else {
+                        data.add(periodo);
+                        entrada.clear();
+                        saida.clear();
+                    }
                 }
             }
         });
