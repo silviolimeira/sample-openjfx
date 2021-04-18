@@ -102,6 +102,13 @@ public class Hour {
     public void clear() {
         hh.setText("");
         mm.setText("");
+        hh.setStyle("-fx-text-inner-color: black;");
+        mm.setStyle("-fx-text-inner-color: black;");
+    }
+
+    public void invalidate() {
+        hh.setStyle("-fx-text-inner-color: red;");
+        mm.setStyle("-fx-text-inner-color: red;");
     }
 
 }

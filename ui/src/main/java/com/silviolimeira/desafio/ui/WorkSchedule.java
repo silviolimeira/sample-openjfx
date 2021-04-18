@@ -192,6 +192,8 @@ public class WorkSchedule {
                     Periodo periodo = new Periodo(entrada.toString(),saida.toString());
                     if (!periodo.testaIntersecaoPeriodos(periodo, getTableAsList())) {
                         System.out.println("testa periodo: " + periodo.testaIntersecaoPeriodos(periodo, getTableAsList()));
+                        entrada.invalidate();
+                        saida.invalidate();
                     } else {
                         data.add(periodo);
                         entrada.clear();
