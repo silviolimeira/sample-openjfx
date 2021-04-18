@@ -38,15 +38,25 @@ public class CalculaHorarioDeTrabalho {
         return cnd;
     }
 
-    public void subtracaoEntreHorarios(SortedList<Periodo> horarioTrabalho, SortedList<Periodo> marcacoesFeitas,
-                                       SortedList<Periodo> horaExtra, SortedList<Periodo> atraso) {
+    public void subtracaoEntreHorarios(SortedList<Periodo> horarioTrabalho,
+                                       SortedList<Periodo> marcacoesFeitas,
+                                       SortedList<Periodo> horaExtra,
+                                       SortedList<Periodo> atraso) {
 
-        int max = horarioTrabalho.size();
-        System.out.println("Horario Trabalho: ### " + max);
+        int max = 0;
+//        max = horarioTrabalho.size();
+//        System.out.println("Horario Trabalho: ### " + max);
+//        for (int i = 0; i < max; i++ ) {
+//            Periodo periodoHorarioTrabalho = horarioTrabalho.get(i);
+//            System.out.println("i: " + i + ", " + periodoHorarioTrabalho.toString());
+//        }
+        max = marcacoesFeitas.size();
+        System.out.println("Marcacoes Feitas: ### " + max);
         for (int i = 0; i < max; i++ ) {
-            Periodo periodoTrabalho = horarioTrabalho.get(i);
-            System.out.println("i: " + i + ", " + periodoTrabalho.toString());
+            Periodo marcacaoFeita = marcacoesFeitas.get(i);
+            System.out.println("i: " + i + ", " + marcacaoFeita.toString());
         }
+
 
     }
 
