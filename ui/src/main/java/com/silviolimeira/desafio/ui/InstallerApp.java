@@ -231,6 +231,7 @@ public class InstallerApp extends Application {
     WorkSchedule marcacoesFeitas;
     WorkScheduleReport atraso;
     WorkScheduleReport horaExtra;
+    CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
 
     private boolean cancelTreads = false;
 
@@ -297,8 +298,6 @@ public class InstallerApp extends Application {
                 String workDir = System.getProperty("user.dir");
                 System.out.println("User dir: " + workDir);
 
-                CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
-
                 while (!cancelTreads) {
                     System.out.print(".");
                     Thread.sleep(1000);
@@ -308,6 +307,10 @@ public class InstallerApp extends Application {
                         System.out.println("#");
                         horarioTrabalho.setUpdated(false);
                         marcacoesFeitas.setUpdated(false);
+
+                        int max = horarioTrabalho.getTableAsList().size();
+                        System.out.println("Horario Trabalho: ### " + max);
+
                         calculaHorarioDeTrabalho.subtracaoEntreHorarios(
                                 horarioTrabalho.getTableAsList(),
                                 marcacoesFeitas.getTableAsList(),

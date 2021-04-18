@@ -23,6 +23,7 @@ public class WorkSchedule {
 
     private VBox vbox = new VBox();
     private TableView<Periodo> table = new TableView<Periodo>();
+    CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
 
     private ObservableList<Periodo> data =
             FXCollections.observableArrayList();
@@ -195,7 +196,6 @@ public class WorkSchedule {
                 if (table.getItems().size() >= maxLines) return;
                 if (entrada.isValid() && saida.isValid()) {
                     Periodo periodo = new Periodo(entrada.toString(),saida.toString());
-                    CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
                     if (!calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList())) {
                         System.out.println("testa periodo: " + calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList()));
                         entrada.invalidate();

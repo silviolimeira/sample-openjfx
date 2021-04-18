@@ -41,8 +41,8 @@ public class CalculaHorarioDeTrabalho {
     public void subtracaoEntreHorarios(SortedList<Periodo> horarioTrabalho, SortedList<Periodo> marcacoesFeitas,
                                        SortedList<Periodo> horaExtra, SortedList<Periodo> atraso) {
 
-        System.out.println("Horario Trabalho: ###");
         int max = horarioTrabalho.size();
+        System.out.println("Horario Trabalho: ### " + max);
         for (int i = 0; i < max; i++ ) {
             Periodo periodoTrabalho = horarioTrabalho.get(i);
             System.out.println("i: " + i + ", " + periodoTrabalho.toString());
