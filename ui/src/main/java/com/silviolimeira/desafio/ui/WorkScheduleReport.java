@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -12,6 +13,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
+
+import java.util.Comparator;
 
 public class WorkScheduleReport {
 
@@ -28,6 +31,26 @@ public class WorkScheduleReport {
     public TableView<Periodo> getTable() {
         return this.table;
     }
+
+    public SortedList<Periodo> getTableAsList() {
+
+        ObservableList<Periodo> stringObservableList =
+                FXCollections.observableArrayList(
+                        this.table.getItems());
+
+        SortedList<Periodo> sortedList = new SortedList<Periodo>(
+                stringObservableList, new Comparator<Periodo>() {
+            @Override
+            public int compare(Periodo o1, Periodo o2) {
+                return o1.toString().compareToIgnoreCase(o2.toString());
+            }
+
+        });
+
+        return sortedList;
+
+    }
+
 
     public VBox getComponent(String title) {
 

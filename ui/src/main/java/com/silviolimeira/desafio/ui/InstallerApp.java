@@ -1,5 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
+import com.silviolimeira.desafio.business.CalculaHorarioDeTrabalho;
 import com.silviolimeira.desafio.model.Periodo;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -248,45 +249,45 @@ public class InstallerApp extends Application {
         launch(args);
     }
 
-    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
-
-//        for (Periodo s : horarioTrabalho.getTableAsList()) {
-//            System.out.println(">" + s.toString());
+//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
+//
+////        for (Periodo s : horarioTrabalho.getTableAsList()) {
+////            System.out.println(">" + s.toString());
+////        }
+//        Periodo p1 = null;
+//        Periodo p2 = null;
+//        Periodo p3 = null;
+//        //System.out.println("***" + horarioTrabalho.getTable().getItems().size());
+//        if (horarioTrabalho.getTable().getItems().size() >=1) {
+//            p1 = horarioTrabalho.getTable().getItems().get(0);
+//            //System.out.println("p1:" + p1.toString());
 //        }
-        Periodo p1 = null;
-        Periodo p2 = null;
-        Periodo p3 = null;
-        //System.out.println("***" + horarioTrabalho.getTable().getItems().size());
-        if (horarioTrabalho.getTable().getItems().size() >=1) {
-            p1 = horarioTrabalho.getTable().getItems().get(0);
-            //System.out.println("p1:" + p1.toString());
-        }
-        if (horarioTrabalho.getTable().getItems().size() >=2) {
-            p2 = horarioTrabalho.getTable().getItems().get(1);
-            //System.out.println("p2:" + p2.toString());
-        }
-        if (horarioTrabalho.getTable().getItems().size() ==3) {
-            p3 = horarioTrabalho.getTable().getItems().get(2);
-            //System.out.println("p3:" + p3.toString());
-        }
-
-
-        int max = horarioTrabalho.getTable().getItems().size();
-        for (int i = 0; i < max; i++) {
-            Periodo periodo = (Periodo)horarioTrabalho.getTable().getItems().get(i);
-            //horaExtra.getTable().getItems().add(txt);
-            horaExtra.getTable().getItems().add(periodo);
-
-            int maxMarcacoes = marcacoesFeitas.getTable().getItems().size();
-            for (int n = 0; n < maxMarcacoes; n++) {
-                Periodo marcacao = (Periodo)marcacoesFeitas.getTable().getItems().get(i);
-                horaExtra.getTable().getItems().add(marcacao);
-
-            }
-
-        }
-
-    }
+//        if (horarioTrabalho.getTable().getItems().size() >=2) {
+//            p2 = horarioTrabalho.getTable().getItems().get(1);
+//            //System.out.println("p2:" + p2.toString());
+//        }
+//        if (horarioTrabalho.getTable().getItems().size() ==3) {
+//            p3 = horarioTrabalho.getTable().getItems().get(2);
+//            //System.out.println("p3:" + p3.toString());
+//        }
+//
+//
+//        int max = horarioTrabalho.getTable().getItems().size();
+//        for (int i = 0; i < max; i++) {
+//            Periodo periodo = (Periodo)horarioTrabalho.getTable().getItems().get(i);
+//            //horaExtra.getTable().getItems().add(txt);
+//            horaExtra.getTable().getItems().add(periodo);
+//
+//            int maxMarcacoes = marcacoesFeitas.getTable().getItems().size();
+//            for (int n = 0; n < maxMarcacoes; n++) {
+//                Periodo marcacao = (Periodo)marcacoesFeitas.getTable().getItems().get(i);
+//                horaExtra.getTable().getItems().add(marcacao);
+//
+//            }
+//
+//        }
+//
+//    }
 
     public Task taskSubtracaoEntreHorarios() {
         return new Task() {
@@ -296,12 +297,25 @@ public class InstallerApp extends Application {
                 String workDir = System.getProperty("user.dir");
                 System.out.println("User dir: " + workDir);
 
+                CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
+
                 while (!cancelTreads) {
                     System.out.print(".");
                     Thread.sleep(1000);
-                    System.out.println(horarioTrabalho.getTable().getItems().size());
+                    //System.out.println(horarioTrabalho.getTable().getItems().size());
 
-                    subtracaoEntreHorarios(horarioTrabalho, marcacoesFeitas, atraso, horaExtra);
+                    if (horarioTrabalho.isUpdated() || marcacoesFeitas.isUpdated()) {
+                        System.out.println("#");
+                        horarioTrabalho.setUpdated(false);
+                        marcacoesFeitas.setUpdated(false);
+                        calculaHorarioDeTrabalho.subtracaoEntreHorarios(
+                                horarioTrabalho.getTableAsList(),
+                                marcacoesFeitas.getTableAsList(),
+                                atraso.getTableAsList(),
+                                horaExtra.getTableAsList()
+                        );
+                        //subtracaoEntreHorarios(horarioTrabalho, marcacoesFeitas, atraso, horaExtra);
+                    }
 
                 }
 

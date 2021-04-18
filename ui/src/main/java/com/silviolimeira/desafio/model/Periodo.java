@@ -1,11 +1,34 @@
 package com.silviolimeira.desafio.model;
 
-import javafx.collections.transformation.SortedList;
-
 public class Periodo implements Comparable<Periodo> {
 
     private String entrada;
     private String saida;
+
+    public int getHoraEntrada() {
+        return horaEntrada;
+    }
+
+    public int getMinutoEntrada() {
+        return minutoEntrada;
+    }
+
+    public int getHoraSaida() {
+        return horaSaida;
+    }
+
+    public int getMinutoSaida() {
+        return minutoSaida;
+    }
+
+    public int getMinutosEntrada() {
+        return minutosEntrada;
+    }
+
+    public int getMinutosSaida() {
+        return minutosSaida;
+    }
+
     int horaEntrada;
     int minutoEntrada;
     int horaSaida;
@@ -20,36 +43,6 @@ public class Periodo implements Comparable<Periodo> {
         this.setSaida(saida);
     }
 
-    public boolean testaIntersecaoPeriodos(Periodo periodo, SortedList<Periodo> periodos) {
-        boolean cnd = true;
-        int max = periodos.size();
-        for (int i = 0; i < max; i++) {
-            Periodo item = periodos.get(i);
-            System.out.print("periodo - " + i + ": " + periodo.toString());
-            System.out.print(" item: " + item.toString());
-            System.out.println(" max: " + max);
-            if (periodo != null) {
-                if (item.minutosEntrada != periodo.minutosEntrada &&
-                    item.minutosSaida != periodo.minutosSaida) {
-                    if (periodo.minutosEntrada >= item.minutosEntrada
-                            && periodo.minutosEntrada <= item.minutosSaida) {
-                        cnd = false;
-                        System.out.println("FALSE");
-                    }
-                    if (periodo.minutosSaida >= item.minutosEntrada
-                            && periodo.minutosSaida <= item.minutosSaida) {
-                        cnd = false;
-                        System.out.println("FALSE");
-                    }
-                    System.out.println("minutosEntrada: " + periodo.minutosEntrada);
-                    System.out.println("minutosSaida: " + periodo.minutosSaida);
-                    System.out.println("itemEntrada: " + item.minutosEntrada);
-                    System.out.println("itemSaida: " + item.minutosSaida);
-                }
-            }
-        }
-        return cnd;
-    }
 
     public String getEntrada() {
         return entrada;

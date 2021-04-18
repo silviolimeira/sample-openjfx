@@ -104,11 +104,14 @@ public class Hour {
         mm.setText("");
         hh.setStyle("-fx-text-inner-color: black;");
         mm.setStyle("-fx-text-inner-color: black;");
+        invalidate();
     }
 
     public void invalidate() {
         hh.setStyle("-fx-text-inner-color: red;");
         mm.setStyle("-fx-text-inner-color: red;");
+        isValidHour = false;
+        isValidMinute = false;
     }
 
 }

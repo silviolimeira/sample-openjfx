@@ -1,5 +1,6 @@
 package com.silviolimeira.desafio.ui;
 
+import com.silviolimeira.desafio.business.CalculaHorarioDeTrabalho;
 import com.silviolimeira.desafio.model.Periodo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,9 +27,18 @@ public class WorkSchedule {
     private ObservableList<Periodo> data =
             FXCollections.observableArrayList();
     private int maxLines = 3;
+    private boolean updated = false;
 
     public WorkSchedule() {
 
+    }
+
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
+
+    public boolean isUpdated() {
+        return this.updated;
     }
 
     public ObservableList<Periodo> getData() {
@@ -177,11 +187,6 @@ public class WorkSchedule {
         addSaida.setPromptText("Saída");
 
         final Button addButton = new Button("Adicionar");
-
-        //final HBox hb = new HBox();
-        //hb.getChildren().addAll(addEntrada, addSaida, addButton);
-        //hb.setSpacing(3);
-
         Hour entrada = new Hour();
         Hour saida = new Hour();
         addButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -190,14 +195,16 @@ public class WorkSchedule {
                 if (table.getItems().size() >= maxLines) return;
                 if (entrada.isValid() && saida.isValid()) {
                     Periodo periodo = new Periodo(entrada.toString(),saida.toString());
-                    if (!periodo.testaIntersecaoPeriodos(periodo, getTableAsList())) {
-                        System.out.println("testa periodo: " + periodo.testaIntersecaoPeriodos(periodo, getTableAsList()));
+                    CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
+                    if (!calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList())) {
+                        System.out.println("testa periodo: " + calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList()));
                         entrada.invalidate();
                         saida.invalidate();
                     } else {
                         data.add(periodo);
                         entrada.clear();
                         saida.clear();
+                        setUpdated(true);
                     }
                 }
             }
