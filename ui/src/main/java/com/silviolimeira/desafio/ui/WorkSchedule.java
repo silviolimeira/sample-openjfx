@@ -86,6 +86,7 @@ public class WorkSchedule {
                             System.out.println("selectedData: " + data.getEntrada());
                             data.getSaida();
                             getTableView().getItems().remove(getIndex());
+                            setUpdated(true);
                         });
                     }
 

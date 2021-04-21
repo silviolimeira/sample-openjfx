@@ -228,7 +228,7 @@ public class InstallerApp extends Application {
 //    }
 
     WorkSchedule horarioTrabalho;
-    WorkSchedule marcacoesFeitas;
+    WorkSchedule marcacoes;
     WorkScheduleReport atraso;
     WorkScheduleReport horaExtra;
     CalculaHorarioDeTrabalho calculaHorarioDeTrabalho = new CalculaHorarioDeTrabalho();
@@ -250,7 +250,7 @@ public class InstallerApp extends Application {
         launch(args);
     }
 
-//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoesFeitas, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
+//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoes, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
 //
 ////        for (Periodo s : horarioTrabalho.getTableAsList()) {
 ////            System.out.println(">" + s.toString());
@@ -279,9 +279,9 @@ public class InstallerApp extends Application {
 //            //horaExtra.getTable().getItems().add(txt);
 //            horaExtra.getTable().getItems().add(periodo);
 //
-//            int maxMarcacoes = marcacoesFeitas.getTable().getItems().size();
+//            int maxMarcacoes = marcacoes.getTable().getItems().size();
 //            for (int n = 0; n < maxMarcacoes; n++) {
-//                Periodo marcacao = (Periodo)marcacoesFeitas.getTable().getItems().get(i);
+//                Periodo marcacao = (Periodo)marcacoes.getTable().getItems().get(i);
 //                horaExtra.getTable().getItems().add(marcacao);
 //
 //            }
@@ -303,21 +303,28 @@ public class InstallerApp extends Application {
                     Thread.sleep(1000);
                     //System.out.println(horarioTrabalho.getTable().getItems().size());
 
-                    if (horarioTrabalho.isUpdated() || marcacoesFeitas.isUpdated()) {
+                    if (horarioTrabalho.isUpdated() || marcacoes.isUpdated()) {
                         System.out.println("#");
                         horarioTrabalho.setUpdated(false);
-                        marcacoesFeitas.setUpdated(false);
+                        marcacoes.setUpdated(false);
 
                         int max = horarioTrabalho.getTableAsList().size();
                         System.out.println("Horario Trabalho: ### " + max);
 
-                        calculaHorarioDeTrabalho.subtracaoEntreHorarios(
-                                horarioTrabalho.getTableAsList(),
-                                marcacoesFeitas.getTableAsList(),
-                                atraso.getTableAsList(),
-                                horaExtra.getTableAsList()
-                        );
-                        //subtracaoEntreHorarios(horarioTrabalho, marcacoesFeitas, atraso, horaExtra);
+//                        calculaHorarioDeTrabalho.subtracaoEntreHorarios(
+//                                horarioTrabalho,
+//                                marcacoes,
+//                                atraso,
+//                                horaExtra
+//                        );
+
+                        calculaHorarioDeTrabalho.calcPeriodosHoraExtra(horarioTrabalho.getData());
+
+                        horaExtra.getTable().getItems().clear();
+                        calculaHorarioDeTrabalho.calculaHoraExtraAtraso(horaExtra,atraso,horarioTrabalho,marcacoes);
+                        //subtracaoEntreHorarios(horarioTrabalho, marcacoes, atraso, horaExtra);
+                        //horaExtra.getTable().getItems().add(new Periodo("00:00", "12:22"));
+                        //System.out.println(horarioTrabalho.getTableAsList().add(new Periodo("00:00", "12:22")));
                     }
 
                 }
@@ -346,12 +353,12 @@ public class InstallerApp extends Application {
         root.getChildren().add(mainPane);
 
         horarioTrabalho = new WorkSchedule();
-        marcacoesFeitas = new WorkSchedule();
+        marcacoes = new WorkSchedule();
         atraso = new WorkScheduleReport();
         horaExtra = new WorkScheduleReport();
 
         mainPane.setTop(horarioTrabalho.getComponent("Horário de Trabalho", 3));
-        mainPane.setCenter(marcacoesFeitas.getComponent("Marcações Feitas"));
+        mainPane.setCenter(marcacoes.getComponent("Marcações Feitas"));
 
         final HBox hb = new HBox();
         hb.getChildren().addAll(atraso.getComponent("Atraso"), horaExtra.getComponent("Hora Extra"));
