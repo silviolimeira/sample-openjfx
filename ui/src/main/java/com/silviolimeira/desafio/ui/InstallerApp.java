@@ -10,6 +10,7 @@ import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -237,58 +238,12 @@ public class InstallerApp extends Application {
 
     private TableView<Periodo> table = new TableView<Periodo>();
     private final ObservableList<Periodo> data =
-            FXCollections.observableArrayList(
-//                    new Person("Jacob", "Smith", "jacob.smith@example.com"),
-//                    new Person("Isabella", "Johnson", "isabella.johnson@example.com"),
-//                    new Person("Ethan", "Williams", "ethan.williams@example.com"),
-//                    new Person("Emma", "Jones", "emma.jones@example.com"),
-//                    new Person("Michael", "Brown", "michael.brown@example.com")
-            );
+            FXCollections.observableArrayList();
     final HBox hb = new HBox();
 
     public static void main(String[] args) {
         launch(args);
     }
-
-//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho, WorkSchedule marcacoes, WorkScheduleReport atraso, WorkScheduleReport horaExtra) {
-//
-////        for (Periodo s : horarioTrabalho.getTableAsList()) {
-////            System.out.println(">" + s.toString());
-////        }
-//        Periodo p1 = null;
-//        Periodo p2 = null;
-//        Periodo p3 = null;
-//        //System.out.println("***" + horarioTrabalho.getTable().getItems().size());
-//        if (horarioTrabalho.getTable().getItems().size() >=1) {
-//            p1 = horarioTrabalho.getTable().getItems().get(0);
-//            //System.out.println("p1:" + p1.toString());
-//        }
-//        if (horarioTrabalho.getTable().getItems().size() >=2) {
-//            p2 = horarioTrabalho.getTable().getItems().get(1);
-//            //System.out.println("p2:" + p2.toString());
-//        }
-//        if (horarioTrabalho.getTable().getItems().size() ==3) {
-//            p3 = horarioTrabalho.getTable().getItems().get(2);
-//            //System.out.println("p3:" + p3.toString());
-//        }
-//
-//
-//        int max = horarioTrabalho.getTable().getItems().size();
-//        for (int i = 0; i < max; i++) {
-//            Periodo periodo = (Periodo)horarioTrabalho.getTable().getItems().get(i);
-//            //horaExtra.getTable().getItems().add(txt);
-//            horaExtra.getTable().getItems().add(periodo);
-//
-//            int maxMarcacoes = marcacoes.getTable().getItems().size();
-//            for (int n = 0; n < maxMarcacoes; n++) {
-//                Periodo marcacao = (Periodo)marcacoes.getTable().getItems().get(i);
-//                horaExtra.getTable().getItems().add(marcacao);
-//
-//            }
-//
-//        }
-//
-//    }
 
     public Task taskSubtracaoEntreHorarios() {
         return new Task() {
@@ -311,20 +266,10 @@ public class InstallerApp extends Application {
                         int max = horarioTrabalho.getTableAsList().size();
                         System.out.println("Horario Trabalho: ### " + max);
 
-//                        calculaHorarioDeTrabalho.subtracaoEntreHorarios(
-//                                horarioTrabalho,
-//                                marcacoes,
-//                                atraso,
-//                                horaExtra
-//                        );
-
                         calculaHorarioDeTrabalho.calcPeriodosHoraExtra(horarioTrabalho.getData());
 
                         horaExtra.getTable().getItems().clear();
                         calculaHorarioDeTrabalho.calculaHoraExtraAtraso(horaExtra,atraso,horarioTrabalho,marcacoes);
-                        //subtracaoEntreHorarios(horarioTrabalho, marcacoes, atraso, horaExtra);
-                        //horaExtra.getTable().getItems().add(new Periodo("00:00", "12:22"));
-                        //System.out.println(horarioTrabalho.getTableAsList().add(new Periodo("00:00", "12:22")));
                     }
 
                 }
@@ -343,14 +288,24 @@ public class InstallerApp extends Application {
         Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
         stage.getIcons().add(image);
         stage.setTitle("Desafio");
-        stage.setWidth(800);
-        stage.setHeight(600);
+        //stage.setWidth(600);
+        //stage.setHeight(600);
 
         Group root = new Group();
-        Scene scene = new Scene(root, 800, 600, Color.WHITE);
+
+        Scene scene = new Scene(root, 600, 600, Color.LIGHTGREY);
 
         BorderPane mainPane = new BorderPane();
-        root.getChildren().add(mainPane);
+
+        ScrollPane scrollPanePane = new ScrollPane();
+        scrollPanePane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPanePane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPanePane.setFitToWidth(true);
+        scrollPanePane.setFitToHeight(true);
+
+        scrollPanePane.setContent(mainPane);
+
+        root.getChildren().add(scrollPanePane);
 
         horarioTrabalho = new WorkSchedule();
         marcacoes = new WorkSchedule();
@@ -375,6 +330,7 @@ public class InstallerApp extends Application {
                 System.exit(0);
             }
         });
+
 
         stage.setScene(scene);
         stage.show();

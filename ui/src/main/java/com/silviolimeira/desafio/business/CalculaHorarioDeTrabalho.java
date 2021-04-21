@@ -42,103 +42,6 @@ public class CalculaHorarioDeTrabalho {
         return cnd;
     }
 
-//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho,
-//                                       WorkSchedule marcacoesFeitas,
-//                                       WorkScheduleReport horaExtra,
-//                                       WorkScheduleReport atraso) {
-//
-//        int max = 0;
-//        max = marcacoesFeitas.getTable().getItems().size();
-//        System.out.println("Marcacoes Feitas: ### " + max);
-//        try {
-//            for (int i = 0; i < max; i++ ) {
-//                Periodo marcacaoFeita = marcacoesFeitas.getTable().getItems().get(i);
-//                horaExtra.getTable().getItems().add(marcacaoFeita);
-//                System.out.println("i: " + i + ", " + marcacaoFeita.toString());
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
-
-    public void diferencaAtraso(Periodo p, Periodo periodoHorarioDeTrabalho, ObservableList<Periodo> atrasos) {
-        int pe = p.getMinutosEntrada();
-        int ps = p.getMinutosSaida();
-        int hti = periodoHorarioDeTrabalho.getMinutosEntrada();
-        int htf = periodoHorarioDeTrabalho.getMinutosSaida();
-        Periodo at = null;
-
-        if (hti > htf) {
-            Periodo pht1 = new Periodo(
-                    "00:00", String.format("%02d:%02d", htf / 60, htf % 60));
-            Periodo pht2 = new Periodo(
-                    String.format("%02d:%02d", hti / 60, htf % 60), "23:59");
-            int phti = pht1.getMinutosEntrada();
-            int phtf = pht1.getMinutosSaida();
-            if ((pe >= phti && pe < phtf) && ps > phtf) {
-                at = new Periodo(
-                        String.format("%02d:%02d", hti / 60, hti % 60),
-                        String.format("%02d:%02d", pe / 60, pe % 60)
-                );
-                atrasos.add(at);
-            }
-
-        }
-
-        if (pe >= hti && ps <= htf) {
-            if (pe >= hti) {
-                at = new Periodo(
-                        String.format("%02d:%02d", hti / 60, hti % 60),
-                        String.format("%02d:%02d", pe / 60, pe % 60)
-                );
-                atrasos.add(at);
-            }
-            if (ps <= htf) {
-                at = new Periodo(
-                        String.format("%02d:%02d", ps / 60, ps % 60),
-                        String.format("%02d:%02d", htf / 60, htf % 60)
-                );
-                atrasos.add(at);
-            }
-        }
-    }
-
-    public void calculaAtraso(Periodo p, ObservableList<Periodo> horarioDeTrabalho, ObservableList<Periodo> atrasos) {
-        System.out.println("     Calcula Atraso     - periodo: " + p.toString() + " ");
-
-        int max = horarioDeTrabalho.size();
-        for (int i = 0; i < max; i++) {
-            Periodo pht =  horarioDeTrabalho.get(i);
-
-            int pe = p.getMinutosEntrada();
-            int ps = p.getMinutosSaida();
-            Periodo he = null;
-
-            System.out.println("       " + i+1 + ": P.h.t: " + pht.toString() + " ===========");
-            if (pe > ps) {
-                p = new Periodo("00:00", String.format("%02d:%02d", ps / 60, ps % 60));
-                int pe1 = p.getMinutosEntrada();
-                int ps1 = p.getMinutosSaida();
-                System.out.println("          p1: " + p.toString());
-                diferencaAtraso(p, pht, atrasos);
-
-                p = new Periodo(String.format("%02d:%02d", pe / 60, pe % 60), "23:59");
-                int pe2 = p.getMinutosEntrada();
-                int ps2 = p.getMinutosSaida();
-                System.out.println("          p2: " + p.toString());
-                diferencaAtraso(p, pht, atrasos);
-
-            } else {
-                diferencaAtraso(p, pht, atrasos);
-            }
-        }
-    }
-
-
-
     public void diferencaHoraExtra(Periodo p, Periodo periodoHoraExtra, ObservableList<Periodo> horaExtra) {
         int pe = p.getMinutosEntrada();
         int ps = p.getMinutosSaida();
@@ -176,9 +79,9 @@ public class CalculaHorarioDeTrabalho {
     public void calculaHoraExtra(Periodo p, ObservableList<Periodo> horaExtra) {
         System.out.println("     Calcula Hora Extra - periodo: " + p.toString() + " ");
 
-        int max = periodosHoraExtra.getTable().getItems().size();
+        int max = periodosHoraExtra.getTableAsList().size();
         for (int i = 0; i < max; i++) {
-            Periodo phe = periodosHoraExtra.getTable().getItems().get(i);
+            Periodo phe = periodosHoraExtra.getTableAsList().get(i);
 
             int pe = p.getMinutosEntrada();
             int ps = p.getMinutosSaida();
@@ -386,97 +289,6 @@ public class CalculaHorarioDeTrabalho {
 
     }
 
-    public int compareTo(Periodo o) {
-        return o.toString().compareToIgnoreCase(this.toString());
-    }
 
-    public void calcPeriodoAtraso(Periodo ht1, Periodo ht2, ObservableList<Periodo> periodosAtraso) {
-        int hte0 = 0;
-        int hts0 = 0;
-        int hte1 = 0;
-        int hts1 = 0;
-        int hte2 = 0;
-        int hts2 = 0;
-        Periodo p = null;
-        if (ht2.getMinutosEntrada() < ht2.getMinutosSaida()) {
-            hte0 = 0;
-            hts0 = ht1.getMinutosEntrada();
-            hte1 = ht1.getMinutosSaida();
-            hts1 = ht2.getMinutosEntrada();
-            hte2 = ht2.getMinutosSaida();
-            hts2 = 23 * 60 + 59;
-            p = new Periodo(
-                    String.format("%02d:%02d", hte0 / 60, hte0 % 60),
-                    String.format("%02d:%02d", hts0 / 60, hts0 % 60));
-            periodosAtraso.add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hte1 / 60, hte1 % 60),
-                    String.format("%02d:%02d", hts1 / 60, hts1 % 60));
-            periodosAtraso.add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hte2 / 60, hte2 % 60),
-                    String.format("%02d:%02d", hts2 / 60, hts2 % 60));
-            periodosAtraso.add(p);
-        } else {
-            hte0 = ht1.getMinutosEntrada();
-            hts0 = ht1.getMinutosSaida();
-            p = new Periodo(
-                    String.format("%02d:%02d", hte0 / 60, hte0 % 60),
-                    String.format("%02d:%02d", hts0 / 60, hts0 % 60));
-            periodosAtraso.add(p);
-
-            hte1 = ht2.getMinutosEntrada();
-            hts1 = ht2.getMinutosSaida();
-            calcPeriodoAtraso(ht2, periodosAtraso);
-
-        }
-
-    }
-
-
-    public void calcPeriodoAtraso(Periodo ht, ObservableList<Periodo> periodosAtraso) {
-        int hte = ht.getMinutosEntrada();
-        int hts = ht.getMinutosSaida();
-        Periodo p1;
-        Periodo p2;
-        if (hte > hts) {
-            p1 = new Periodo(
-                    "00:00", String.format("%02d:%02d", hts / 60, hts % 60));
-
-            p2 = new Periodo(
-                    String.format("%02d:%02d", hte / 60, hte % 60), "23:59");
-            periodosAtraso.add(p1);
-            periodosAtraso.add(p2);
-        } else {
-            p1 = new Periodo(
-                    String.format("%02d:%02d", hte / 60, hte % 60),
-                    String.format("%02d:%02d", hts / 60, hts % 60));
-
-            periodosAtraso.add(p1);
-        }
-    }
-
-
-    public void calcPeriodosAtraso(ObservableList<Periodo> horarioDeTrabalho, ObservableList<Periodo> periodosAtraso) {
-        int max = 0;
-        max = horarioDeTrabalho.size();
-
-        if (max == 1) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            calcPeriodoAtraso(ht1, periodosAtraso);
-        }
-        if (max == 2) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            Periodo ht2 = horarioDeTrabalho.get(1);
-            calcPeriodoAtraso(ht1, ht2, periodosAtraso);
-        }
-        if (max == 3) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            Periodo ht2 = horarioDeTrabalho.get(1);
-            Periodo ht3 = horarioDeTrabalho.get(2);
-            //calcPeriodoAtraso(ht1, ht2, ht3, periodosAtraso);
-        }
-
-    }
 
 }
