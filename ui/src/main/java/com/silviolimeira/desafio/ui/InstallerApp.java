@@ -288,7 +288,7 @@ public class InstallerApp extends Application {
         Image image = new Image(InstallerApp.class.getResourceAsStream("/images/logo.png"));
         stage.getIcons().add(image);
         stage.setTitle("Desafio");
-        //stage.setWidth(600);
+        //stage.setWidth(800);
         //stage.setHeight(600);
 
         Group root = new Group();
@@ -299,7 +299,8 @@ public class InstallerApp extends Application {
 
         ScrollPane scrollPanePane = new ScrollPane();
         scrollPanePane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPanePane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPanePane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPanePane.setPrefViewportWidth(580);
         scrollPanePane.setFitToWidth(true);
         scrollPanePane.setFitToHeight(true);
 

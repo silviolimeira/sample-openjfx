@@ -53,25 +53,36 @@ public class CalculaHorarioDeTrabalho {
                     String.format("%02d:%02d", pe / 60, pe % 60),
                     String.format("%02d:%02d", ps / 60, ps % 60)
             );
-            horaExtra.add(he);
+            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
+                horaExtra.add(he);
+            }
         } else if (pe < hei && (ps >= hei && ps <= hef)) {
             he = new Periodo(
                     String.format("%02d:%02d",hei / 60, hei % 60),
                     String.format("%02d:%02d", ps / 60, ps % 60)
             );
-            horaExtra.add(he);
+            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
+                horaExtra.add(he);
+            }
+
         } else if ((pe >= hei && pe <= hef) && ps > hef) {
             he = new Periodo(
                     String.format("%02d:%02d", pe / 60, pe % 60),
                     String.format("%02d:%02d", hef / 60, hef % 60)
             );
-            horaExtra.add(he);
+            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
+                horaExtra.add(he);
+            }
+
         } else if (pe < hei && ps > hef) {
             he = new Periodo(
                     String.format("%02d:%02d", hei / 60, hei % 60),
                     String.format("%02d:%02d", hef / 60, hef % 60)
             );
-            horaExtra.add(he);
+            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
+                horaExtra.add(he);
+            }
+
 
         }
     }
