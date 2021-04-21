@@ -365,9 +365,6 @@ public class InstallerApp extends Application {
         hb.setSpacing(3);
         mainPane.setBottom(hb);
 
-        //((Group) scene.getRoot()).getChildren().addAll(workSchedule.getInstance(), workSchedule1.getInstance());
-        //System.out.println("subtracao");
-
         new Thread(taskSubtracaoEntreHorarios()).start();
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

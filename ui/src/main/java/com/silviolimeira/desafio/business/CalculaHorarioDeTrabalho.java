@@ -42,35 +42,28 @@ public class CalculaHorarioDeTrabalho {
         return cnd;
     }
 
-    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho,
-                                       WorkSchedule marcacoesFeitas,
-                                       WorkScheduleReport horaExtra,
-                                       WorkScheduleReport atraso) {
-
-        int max = 0;
-//        max = horarioTrabalho.size();
-//        System.out.println("Horario Trabalho: ### " + max);
-//        for (int i = 0; i < max; i++ ) {
-//            Periodo periodoHorarioTrabalho = horarioTrabalho.get(i);
-//            System.out.println("i: " + i + ", " + periodoHorarioTrabalho.toString());
+//    public void subtracaoEntreHorarios(WorkSchedule horarioTrabalho,
+//                                       WorkSchedule marcacoesFeitas,
+//                                       WorkScheduleReport horaExtra,
+//                                       WorkScheduleReport atraso) {
+//
+//        int max = 0;
+//        max = marcacoesFeitas.getTable().getItems().size();
+//        System.out.println("Marcacoes Feitas: ### " + max);
+//        try {
+//            for (int i = 0; i < max; i++ ) {
+//                Periodo marcacaoFeita = marcacoesFeitas.getTable().getItems().get(i);
+//                horaExtra.getTable().getItems().add(marcacaoFeita);
+//                System.out.println("i: " + i + ", " + marcacaoFeita.toString());
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
 //        }
-        max = marcacoesFeitas.getTable().getItems().size();
-        System.out.println("Marcacoes Feitas: ### " + max);
-        try {
-            for (int i = 0; i < max; i++ ) {
-                Periodo marcacaoFeita = marcacoesFeitas.getTable().getItems().get(i);
-                horaExtra.getTable().getItems().add(marcacaoFeita);
-                System.out.println("i: " + i + ", " + marcacaoFeita.toString());
-            }
+//
+//
+//    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    //computaAtraso(atrasos, horarioDeTrabalho, marcacoes);
     public void diferencaAtraso(Periodo p, Periodo periodoHorarioDeTrabalho, ObservableList<Periodo> atrasos) {
         int pe = p.getMinutosEntrada();
         int ps = p.getMinutosSaida();

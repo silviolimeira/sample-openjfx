@@ -211,9 +211,22 @@ public class WorkSchedule {
             }
         });
 
+        final Button cleanButton = new Button("Limpar");
+        cleanButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                if (table.getItems().size() >= maxLines) return;
+                entrada.clear();
+                saida.clear();
+                data.clear();
+                setUpdated(true);
+            }
+        });
+
+
         final HBox hb = new HBox();
         hb.setSpacing(10);
-        hb.getChildren().addAll(entrada.getComponent("Entrada:"), saida.getComponent("Saída:"), addButton);
+        hb.getChildren().addAll(entrada.getComponent("Entrada:"), saida.getComponent("Saída:"), addButton, cleanButton);
 
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 0, 0, 10));
