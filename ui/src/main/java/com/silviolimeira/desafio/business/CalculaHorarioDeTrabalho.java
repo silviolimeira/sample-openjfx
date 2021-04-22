@@ -11,35 +11,71 @@ public class CalculaHorarioDeTrabalho {
 
     public CalculaHorarioDeTrabalho() {}
 
-    public boolean testaIntersecaoPeriodos(Periodo periodo, ObservableList<Periodo> periodos) {
-        boolean cnd = true;
-        int max = periodos.size();
-        for (int i = 0; i < max; i++) {
-            Periodo item = periodos.get(i);
-            System.out.print("periodo - " + i + ": " + periodo.toString());
-            System.out.print(" item: " + item.toString());
-            System.out.println(" max: " + max);
-            if (periodo != null) {
-                if (item.getMinutosEntrada() != periodo.getMinutosEntrada() &&
-                        item.getMinutosSaida() != periodo.getMinutosSaida()) {
-                    if (periodo.getMinutosEntrada() >= item.getMinutosEntrada()
-                            && periodo.getMinutosEntrada() <= item.getMinutosSaida()) {
-                        cnd = false;
-                        System.out.println("FALSE");
-                    }
-                    if (periodo.getMinutosSaida() >= item.getMinutosEntrada()
-                            && periodo.getMinutosSaida() <= item.getMinutosSaida()) {
-                        cnd = false;
-                        System.out.println("FALSE");
-                    }
-                    System.out.println("minutosEntrada: " + periodo.getMinutosEntrada());
-                    System.out.println("minutosSaida: " + periodo.getMinutosSaida());
-                    System.out.println("itemEntrada: " + item.getMinutosEntrada());
-                    System.out.println("itemSaida: " + item.getMinutosSaida());
-                }
+    public static boolean intersecao(Periodo periodo, Periodo periodoTrabalho) {
+        Periodo p;
+        Periodo p1;
+        int pe = periodo.getMinutosEntrada();
+        int ps = periodo.getMinutosSaida();
+        int iteme = periodoTrabalho.getMinutosEntrada();
+        int items = periodoTrabalho.getMinutosSaida();
+        if (pe > ps) {
+            p1 = new Periodo(
+                    "00:00",
+                    String.format("%02d:%02d", ps / 60, ps % 60)
+            );
+            int p1e = p1.getMinutosEntrada();
+            int p1s = p1.getMinutosSaida();
+            if ((p1e >= iteme && p1e <= items) || (p1s >= iteme && p1s <= items)) {
+                return true;
+            }
+
+            p1 = new Periodo(
+                    String.format("%02d:%02d", pe / 60, pe % 60),
+                    "23:59"
+            );
+            p1e = p1.getMinutosEntrada();
+            p1s = p1.getMinutosSaida();
+            if ((p1e >= iteme && p1e <= items) || (p1s >= iteme && p1s <= items)) {
+                return true;
+            }
+        } else {
+            if ((pe >= iteme && pe <= items) || (ps >= iteme && ps <= items)) {
+                return true;
             }
         }
-        return cnd;
+        return false;
+    }
+
+    public boolean testaIntersecaoPeriodos(Periodo periodo, ObservableList<Periodo> periodos) {
+        Periodo pt;
+        int max = periodos.size();
+        for (int i = 0; i < max; i++) {
+            Periodo periodoTrabalho = periodos.get(i);
+//            System.out.print("periodo - " + i + ": " + periodo.toString());
+//            System.out.print(" item: " + item.toString());
+//            System.out.println(" max: " + max);
+            int pte = periodoTrabalho.getMinutosEntrada();
+            int pts = periodoTrabalho.getMinutosSaida();
+            if (pte > pts) {
+                pt = new Periodo(
+                        "00:00",
+                        String.format("%02d:%02d", pts / 60, pts % 60)
+                );
+                if (intersecao(periodo,pt))
+                    return false;
+                pt = new Periodo(
+                        String.format("%02d:%02d", pte / 60, pte % 60),
+                        "23:59"
+                );
+                if (intersecao(periodo,pt))
+                    return false;
+            } else {
+                if (intersecao(periodo,periodoTrabalho))
+                    return false;
+            }
+
+        }
+        return true;
     }
 
     public void diferencaHoraExtra(Periodo p, Periodo periodoHoraExtra, ObservableList<Periodo> horaExtra) {

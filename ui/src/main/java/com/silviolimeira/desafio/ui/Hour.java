@@ -26,6 +26,7 @@ public class Hour {
 
         //final TextField hh = new TextField();
         // force the field to be numeric only
+
         hh.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue,
@@ -36,7 +37,7 @@ public class Hour {
                 if (!newValue.matches("\\d*")) {
                     hh.setText(newValue.replaceAll("[^\\d]", ""));
                 }
-                if (hh.getText().length() > 0) {
+                if (hh.getText().length() >= 0) {
                     if (Integer.parseInt("0" + hh.getText()) > 23) {
                         hh.setStyle("-fx-text-inner-color: red;");
                         isValidHour = false;
@@ -44,7 +45,12 @@ public class Hour {
                         hh.setStyle("-fx-text-inner-color: black;");
                         isValidHour = true;
                     }
+                } else {
+                    mm.setStyle("-fx-text-inner-color: black;");
+                    isValidMinute = true;
                 }
+
+
             }
         });
         hh.setPromptText("");
@@ -65,7 +71,7 @@ public class Hour {
                 if (!newValue.matches("\\d*")) {
                     mm.setText(newValue.replaceAll("[^\\d]", ""));
                 }
-                if (mm.getText().length() > 0) {
+                if (mm.getText().length() >= 0) {
                     if (Integer.parseInt("0" + mm.getText()) > 59) {
                         mm.setStyle("-fx-text-inner-color: red;");
                         isValidMinute = false;
@@ -73,6 +79,9 @@ public class Hour {
                         mm.setStyle("-fx-text-inner-color: black;");
                         isValidMinute = true;
                     }
+                } else {
+                    mm.setStyle("-fx-text-inner-color: black;");
+                    isValidMinute = true;
                 }
 
             }

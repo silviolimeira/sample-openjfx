@@ -2,6 +2,7 @@ package com.silviolimeira.desafio.ui;
 
 import com.silviolimeira.desafio.business.CalculaHorarioDeTrabalho;
 import com.silviolimeira.desafio.model.Periodo;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -197,16 +198,22 @@ public class WorkSchedule {
                 if (table.getItems().size() >= maxLines) return;
                 if (entrada.isValid() && saida.isValid()) {
                     Periodo periodo = new Periodo(entrada.toString(),saida.toString());
-                    if (!calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList())) {
-                        System.out.println("testa periodo: " + calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList()));
-                        entrada.invalidate();
-                        saida.invalidate();
-                    } else {
-                        data.add(periodo);
-                        entrada.clear();
-                        saida.clear();
-                        setUpdated(true);
-                    }
+                    Platform.runLater(() -> {
+                        try {
+                            if (!calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList())) {
+                                //System.out.println("testa periodo: " + calculaHorarioDeTrabalho.testaIntersecaoPeriodos(periodo, getTableAsList()));
+                                //entrada.invalidate();
+                                //saida.invalidate();
+                            } else {
+                                data.add(periodo);
+                                entrada.clear();
+                                saida.clear();
+                                setUpdated(true);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    });
                 }
             }
         });
