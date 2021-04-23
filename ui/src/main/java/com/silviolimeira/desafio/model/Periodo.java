@@ -54,7 +54,7 @@ public class Periodo implements Comparable<Periodo> {
             this.horaEntrada = Integer.parseInt(entrada.substring(0,2));
             this.minutoEntrada = Integer.parseInt(entrada.substring(3,5));
             this.minutosEntrada = this.horaEntrada * 60 + this.minutoEntrada;
-            System.out.println("** minutos entrada: " + this.minutosEntrada);
+            //System.out.println("** minutos entrada: " + this.minutosEntrada);
         }
     }
 

@@ -270,6 +270,7 @@ public class InstallerApp extends Application {
 
                         horaExtra.getTable().getItems().clear();
                         atraso.getTable().getItems().clear();
+
                         calculaHorarioDeTrabalho.calculaHoraExtraAtraso(horaExtra,atraso,horarioTrabalho,marcacoes);
                     }
 
