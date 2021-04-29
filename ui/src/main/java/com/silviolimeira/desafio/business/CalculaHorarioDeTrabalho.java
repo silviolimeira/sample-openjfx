@@ -5,8 +5,8 @@ import com.silviolimeira.desafio.ui.WorkSchedule;
 import com.silviolimeira.desafio.ui.WorkScheduleReport;
 import javafx.collections.ObservableList;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CalculaHorarioDeTrabalho {
@@ -15,39 +15,233 @@ public class CalculaHorarioDeTrabalho {
 
     public CalculaHorarioDeTrabalho() {}
 
-    public static boolean intersecao(Periodo periodo, Periodo periodoTrabalho) {
-        Periodo p;
-        Periodo p1;
-        int pe = periodo.getMinutosEntrada();
-        int ps = periodo.getMinutosSaida();
-        int iteme = periodoTrabalho.getMinutosEntrada();
-        int items = periodoTrabalho.getMinutosSaida();
-        if (pe > ps) {
-            p1 = new Periodo(
-                    "00:00",
-                    String.format("%02d:%02d", ps / 60, ps % 60)
-            );
-            int p1e = p1.getMinutosEntrada();
-            int p1s = p1.getMinutosSaida();
-            if ((p1e >= iteme && p1e <= items) || (p1s >= iteme && p1s <= items)) {
-                return true;
+    public static void calculaAtraso(Periodo horarioTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
+        int max = marcacoes.size();
+        if (max == 0) return ;
+        Periodo marcacao;
+        Periodo pm;
+        Periodo ma = null;
+        int mpe = 0;
+        int mas = 0;
+        for (int i = 0; i < max; i++) {
+            marcacao = marcacoes.get(i);
+            mas = -1;
+            if (i - 1 >= 0) {
+                ma = marcacoes.get(i - 1);
+                mas = marcacoes.get(i - 1).getMinutosSaida();
+            }
+            mpe = -1;
+            if (i + 1 < max) {
+                pm = marcacoes.get(i + 1);
+                mpe = marcacoes.get(i + 1).getMinutosEntrada();
             }
 
-            p1 = new Periodo(
-                    String.format("%02d:%02d", pe / 60, pe % 60),
-                    "23:59"
-            );
-            p1e = p1.getMinutosEntrada();
-            p1s = p1.getMinutosSaida();
-            if ((p1e >= iteme && p1e <= items) || (p1s >= iteme && p1s <= items)) {
+            int me = marcacao.getMinutosEntrada();
+            int ms = marcacao.getMinutosSaida();
+            int he = horarioTrabalho.getMinutosEntrada();
+            int hs = horarioTrabalho.getMinutosSaida();
+            Periodo a;
+            int inters = intersecao(marcacao, horarioTrabalho);
+            if (intersecao(marcacao, horarioTrabalho) > 0) {
+                //System.out.println("### Calcula atraso ###");
+                System.out.println("### Marcacao: " + marcacao.toString() + " ..............." + " horarioTrabalho: " + horarioTrabalho.toString());
+
+
+                int e = 0;
+                int s = 0;
+                if (me > he) {
+                    e = he;
+                    String mas_s = String.format("%02d:%02d", mas / 60, mas % 60);
+                    String he_s = String.format("%02d:%02d", he / 60, he % 60);
+                    if (mas > 0 && mas > he) e = mas;
+                    a = new Periodo(e, me);
+                    System.out.println("       -1 Atraso: " + a.toString());
+                    if (atrasos.indexOf(a) == -1) {
+                        atrasos.add(a);
+                    }
+                }
+                if (ms < hs) {
+                    s = hs;
+                    //String ms_s = String.format("%02d:%02d", ms / 60, ms % 60);
+                    //String mpe_s = String.format("%02d:%02d", mpe / 60, mpe % 60);
+                    //String hs_s = String.format("%02d:%02d", hs / 60, hs % 60);
+                    if (mpe > 0 && mpe < hs) s = mpe;
+                    //String s_s = String.format("%02d:%02d", s / 60, s % 60);
+                    a = new Periodo(ms, s);
+                    //System.out.println("       -1 Atraso: " + a.toString());
+                    if (atrasos.indexOf(a) == -1) {
+                        atrasos.add(a);
+                    }
+                }
+            }
+        }
+    }
+
+    public static boolean intersecao(int hr, int mn, Periodo contido) {
+        int ce = contido.getMinutosEntrada();
+        int cs = contido.getMinutosSaida();
+        int hora = hr * 60 + mn;
+        if (ce < cs) {
+            if (hora >= ce && hora <= cs) {
                 return true;
             }
         } else {
-            if ((pe >= iteme && pe <= items) || (ps >= iteme && ps <= items)) {
+            if (hora >= ce && hora <= 23 * 60 + 59) {
+                return true;
+            }
+            if (hora >= 0 && hora <= cs) {
                 return true;
             }
         }
         return false;
+    }
+
+
+    public static int intersecao(Periodo periodo, Periodo contido) {
+        int cnd = 0;
+        int h = periodo.getMinutosEntrada() / 60;
+        int m = periodo.getMinutosEntrada() % 60;
+        if (intersecao(h, m, contido)) cnd |= 1;
+        h = periodo.getMinutosSaida() / 60;
+        m = periodo.getMinutosSaida() % 60;
+        if (intersecao(h, m, contido)) cnd |= 2;
+        return cnd;
+    }
+
+    public static void verificaPeriodos(List<Periodo> horarioTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
+        Periodo ht = null;
+        Periodo m = null;
+        int max = horarioTrabalho.size();
+        for (int i = 0; i < max; i++) {
+            ht = horarioTrabalho.get(i);
+            int maxm = marcacoes.size();
+            Boolean cnd = true;
+            for (int j = 0; j < maxm; j++) {
+                m = marcacoes.get(j);
+                int inter = intersecao(m,ht);
+                if (intersecao(m,ht) > 0) {
+                    cnd = false;
+                }
+                inter = intersecao(ht,m);
+                if (intersecao(ht,m) > 0) {
+                    cnd = false;
+                }
+            }
+            if (cnd == true) {
+                atrasos.add(ht);
+            }
+        }
+
+        Periodo a1 = null;
+        Periodo a2 = null;
+        max = atrasos.size();
+        int i = 0;
+        for (i = 0; i < max; i++) {
+            a1 = atrasos.get(i);
+            if (a1.getMinutosEntrada() == 0) {
+                break;
+            }
+        }
+        if (a1 != null) {
+            if (a1.getMinutosEntrada() == 0) {
+                atrasos.remove(i);
+            }
+        }
+        Periodo p = null;
+        max = atrasos.size();
+        i = 0;
+        for (i = 0; i < max; i++) {
+            a2 = atrasos.get(i);
+            if (a2.getMinutosSaida() == (23 * 60 + 59)) {
+                a2.setMinutosSaida(a1.getMinutosSaida());
+                p = new Periodo(a2.getMinutosEntrada(), a1.getMinutosSaida());
+                atrasos.set(i, p);
+                break;
+            }
+        }
+
+    }
+
+    public static List<Periodo> normalizaPeriodos(List<Periodo> periodos) {
+        int max = periodos.size();
+        if (max == 0) return null;
+        List<Periodo> periodosNorm = new ArrayList<>();
+        Periodo periodo = null;
+        Periodo p = null;
+        for (int i = 0; i < max; i++) {
+            periodo = periodos.get(i);
+            int pe = periodo.getMinutosEntrada();
+            int ps = periodo.getMinutosSaida();
+            if (pe > ps) {
+                p = new Periodo(pe, 23 * 60 + 59);
+                periodosNorm.add(p);
+                p = new Periodo(0, ps);
+                periodosNorm.add(p);
+            } else {
+                periodosNorm.add(periodo);
+            }
+        }
+        return periodosNorm;
+    }
+
+
+    public static void ordenaPeriodos(List<Periodo> periodos) {
+        int max = periodos.size();
+        if (max == 0) return;
+        List<String> horarioTrabalhoAsc = new ArrayList<>();
+        for (int i = 0; i < max; i++) {
+            horarioTrabalhoAsc.add(periodos.get(i).toString());
+        }
+        Collections.sort(horarioTrabalhoAsc);
+        periodos.clear();
+        for (int i = 0; i < max; i++) {
+            periodos.add(new Periodo(horarioTrabalhoAsc.get(i)));
+        }
+    }
+
+    public static void calcAtrasoMarcacoes(List<Periodo> horarioDeTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
+
+        Periodo marcacao = null;
+        Periodo atraso = null;
+
+        System.out.println("=============== ### Calcula Atraso Marcacoes: ### =========================");
+        ordenaPeriodos(horarioDeTrabalho);
+        System.out.println("Horario de trabalho: " + horarioDeTrabalho);
+        ordenaPeriodos(marcacoes);
+        System.out.println("Marcacoes          : " + marcacoes);
+        System.out.println("===========================================================================");
+
+        List<Periodo> horarioTrabalhoNorm = normalizaPeriodos(horarioDeTrabalho);
+        ordenaPeriodos(horarioTrabalhoNorm);
+        System.out.println("** Horario de trabalho norm ASC: " + horarioTrabalhoNorm);
+        List<Periodo> marcacoesNorm = normalizaPeriodos(marcacoes);
+        ordenaPeriodos(marcacoesNorm);
+        System.out.println("** Marcacoes norm ASC: " + marcacoesNorm);
+        System.out.println("");
+
+
+
+        Periodo ma = null;
+        Periodo p = null;
+        Periodo ht = null;
+
+        atrasos.clear();
+
+        int maxht = horarioTrabalhoNorm.size();
+        for (int j = 0; j < maxht; j++) {
+            ht = horarioTrabalhoNorm.get(j);
+            //(hte > hts)
+            calculaAtraso(ht, marcacoesNorm, atrasos);
+            //System.out.println("atrasos: " + atrasos);
+            //System.out.println("");
+
+        }
+        verificaPeriodos(horarioTrabalhoNorm, marcacoes, atrasos);
+
+
+        System.out.println("** Atrasos: " + atrasos);
+
+
     }
 
     public boolean testaIntersecaoPeriodos(Periodo periodo, ObservableList<Periodo> periodos) {
@@ -65,16 +259,16 @@ public class CalculaHorarioDeTrabalho {
                         "00:00",
                         String.format("%02d:%02d", pts / 60, pts % 60)
                 );
-                if (intersecao(periodo,pt))
+                if (intersecao(periodo,pt) > 0)
                     return false;
                 pt = new Periodo(
                         String.format("%02d:%02d", pte / 60, pte % 60),
                         "23:59"
                 );
-                if (intersecao(periodo,pt))
+                if (intersecao(periodo,pt) > 0)
                     return false;
             } else {
-                if (intersecao(periodo,periodoTrabalho))
+                if (intersecao(periodo,periodoTrabalho) > 0)
                     return false;
             }
 
@@ -177,6 +371,10 @@ public class CalculaHorarioDeTrabalho {
 
             // calcula atraso
             atraso.getTable().getItems().clear();
+//            calcAtrasoMarcacoes(horarioDeTrabalho.getTable().getItems(),
+//                    marcacoes.getTable().getItems(),
+//                    atraso.getTable().getItems());
+
             calcAtrasoMarcacoes(horarioDeTrabalho.getTable().getItems(),
                     marcacoes.getTable().getItems(),
                     atraso.getTable().getItems());
@@ -343,97 +541,7 @@ public class CalculaHorarioDeTrabalho {
 
     }
 
-    public void calcPeriodoAtraso(Periodo marcacao, Periodo horarioTrabalho, ObservableList<Periodo> periodosAtraso) {
-        int me = marcacao.getMinutosEntrada();
-        int ms = marcacao.getMinutosSaida();
-        int hte = horarioTrabalho.getMinutosEntrada();
-        int hts = horarioTrabalho.getMinutosSaida();
-        Periodo p;
 
-        if (me >= hte && ms <= hts) {
-            if (me > hte) {
-                p = new Periodo(
-                        String.format("%02d:%02d", hte / 60, hte % 60),
-                        String.format("%02d:%02d", me / 60, me % 60));
-                periodosAtraso.add(p);
-            }
-            if (ms < hts) {
-                p = new Periodo(
-                        String.format("%02d:%02d", ms / 60, ms % 60),
-                        String.format("%02d:%02d", hts / 60, hts % 60));
-                periodosAtraso.add(p);
-            }
-        } else if ((me >= hte && me <= hts) && (ms > hts)) {
-            p = new Periodo(
-                    "00:00",
-                    String.format("%02d:%02d", me / 60, me % 60));
-            periodosAtraso.add(p);
-        }
-
-    }
-
-    public void calcAtrasoMarcacoes(ObservableList<Periodo> horarioDeTrabalho, ObservableList<Periodo> marcacoes, ObservableList<Periodo> atrasos) {
-
-        List<Periodo> horariosTrabalhoNorm = new ArrayList<>();
-        horariosTrabalhoNorm = normHorarioTrabalho(horarioDeTrabalho);
-        System.out.println("** Horario Trabalho Normalizado: " + horariosTrabalhoNorm.toString());
-
-        List<Periodo> marcNorm = new ArrayList<>();
-        marcNorm = normHorarioTrabalho(marcacoes);
-        System.out.println("** Marcacoes Normalizado: " + marcNorm.toString());
-
-
-
-        Periodo ht = null;
-        Periodo marcacao = null;
-        int max = horariosTrabalhoNorm.size();
-        int maxm = marcNorm.size();
-        for (int i = 0; i < max; i++) {
-            ht = horariosTrabalhoNorm.get(i);
-            for (int j = 0; j < maxm; j++) {
-                marcacao = marcNorm.get(j);
-                calcPeriodoAtraso(marcacao, ht, atrasos);
-            }
-            if (!intersecao(marcacao, ht)) {
-                System.out.println("intersecao: marcacao: " + marcacao.toString() + " ht: " + ht.toString() );
-                int maxa = atrasos.size();
-                Periodo p;
-                for (int l = 0; l < maxa; l++) {
-                    p = atrasos.get(l);
-                    if (!intersecao(p, ht)) {
-                        System.out.println("*** intersecao: marcacao: " + marcacao.toString() + " ht: " + ht.toString() );
-                        atrasos.add(ht);
-                    }
-                }
-            }
-
-
-        }
-
-    }
-
-    public List<Periodo> normHorarioTrabalho(ObservableList<Periodo> horarios) {
-        List<Periodo> horariosNorm = new ArrayList<Periodo>();
-        int max = horarios.size();
-        int hti = 0;
-        int htf = 0;
-        Periodo p = null;
-        Periodo ht = null;
-        for (int i = 0; i < max; i++) {
-            ht =  horarios.get(i);
-            hti = ht.getMinutosEntrada();
-            htf = ht.getMinutosSaida();
-            if (hti < htf) {
-                horariosNorm.add(horarios.get(i));
-            } else {
-                p = new Periodo("00:00", String.format("%02d:%02d", htf / 60, htf % 60));
-                horariosNorm.add(p);
-                p = new Periodo(String.format("%02d:%02d", hti / 60, hti % 60), "23:59");
-                horariosNorm.add(p);
-            }
-        }
-        return horariosNorm;
-    }
 
 
 }

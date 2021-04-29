@@ -25,8 +25,16 @@ public class Periodo implements Comparable<Periodo> {
         return minutosEntrada;
     }
 
+    public void setMinutosEntrada(int minutosEntrada) {
+        this.minutosEntrada = minutosEntrada;
+    }
+
     public int getMinutosSaida() {
         return minutosSaida;
+    }
+
+    public void setMinutosSaida(int minutosSaida) {
+        this.minutosSaida = minutosSaida;
     }
 
     int horaEntrada;
@@ -43,19 +51,36 @@ public class Periodo implements Comparable<Periodo> {
         this.setSaida(saida);
     }
 
+    public Periodo(int entrada, int saida) {
+//        this.entrada = entrada;
+//        this.saida = saida;
+        this.setEntrada(String.format("%02d:%02d", entrada / 60, entrada % 60));
+        this.setSaida(String.format("%02d:%02d", saida / 60, saida % 60));
+    }
+
+    public Periodo(String periodo) {
+        if (periodo.length() == 11) {
+            this.setEntrada(periodo.substring(0, 5));
+            this.setSaida(periodo.substring(5, 11));
+        }
+    }
+
 
     public String getEntrada() {
         return entrada;
     }
 
     public void setEntrada(String entrada) {
-        this.entrada = entrada;
         if (entrada.length() > 0) {
-            this.horaEntrada = Integer.parseInt(entrada.substring(0,2));
-            this.minutoEntrada = Integer.parseInt(entrada.substring(3,5));
+            this.entrada = entrada.trim();
+            this.horaEntrada = Integer.parseInt(entrada.trim().substring(0,2));
+            this.minutoEntrada = Integer.parseInt(entrada.trim().substring(3,5));
             this.minutosEntrada = this.horaEntrada * 60 + this.minutoEntrada;
-            //System.out.println("** minutos entrada: " + this.minutosEntrada);
         }
+    }
+
+    public void setEntrada(int entrada) {
+        this.setEntrada(String.format("%02d:%02d", entrada / 60, entrada % 60));
     }
 
     public String getSaida() {
@@ -63,12 +88,16 @@ public class Periodo implements Comparable<Periodo> {
     }
 
     public void setSaida(String saida) {
-        this.saida = saida;
         if (saida.length() > 0) {
-            this.horaSaida = Integer.parseInt(saida.substring(0,2));
-            this.minutoSaida = Integer.parseInt(saida.substring(3,5));
+            this.saida = saida.trim();
+            this.horaSaida = Integer.parseInt(saida.trim().substring(0,2));
+            this.minutoSaida = Integer.parseInt(saida.trim().substring(3,5));
             this.minutosSaida = this.horaSaida * 60 + this.minutoSaida;
         }
+    }
+
+    public void setSaida(int saida) {
+        this.setSaida(String.format("%02d:%02d", saida / 60, saida % 60));
     }
 
     public String toString() {
@@ -78,5 +107,35 @@ public class Periodo implements Comparable<Periodo> {
     @Override
     public int compareTo(Periodo o) {
         return o.toString().compareToIgnoreCase(this.toString());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Periodo periodo = (Periodo) o;
+
+        if (horaEntrada != periodo.horaEntrada) return false;
+        if (minutoEntrada != periodo.minutoEntrada) return false;
+        if (horaSaida != periodo.horaSaida) return false;
+        if (minutoSaida != periodo.minutoSaida) return false;
+        if (minutosEntrada != periodo.minutosEntrada) return false;
+        if (minutosSaida != periodo.minutosSaida) return false;
+        if (entrada != null ? !entrada.equals(periodo.entrada) : periodo.entrada != null) return false;
+        return saida != null ? saida.equals(periodo.saida) : periodo.saida == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = entrada != null ? entrada.hashCode() : 0;
+        result = 31 * result + (saida != null ? saida.hashCode() : 0);
+        result = 31 * result + horaEntrada;
+        result = 31 * result + minutoEntrada;
+        result = 31 * result + horaSaida;
+        result = 31 * result + minutoSaida;
+        result = 31 * result + minutosEntrada;
+        result = 31 * result + minutosSaida;
+        return result;
     }
 }
