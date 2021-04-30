@@ -266,10 +266,6 @@ public class CalculaHorarioDeTrabalho {
                     //horasExtras.add(phe);
                     cnd = true;
                 }
-//                inter = intersecao(ht, m);
-//                if (intersecao(ht, m) > 0) {
-//                    cnd = true;
-//                }
             }
             if (cnd == true) {
                 horasExtras.add(phe);
@@ -351,9 +347,6 @@ public class CalculaHorarioDeTrabalho {
             for (int j = 0; j < max; j++) {
                 a2 = atrasos.get(j);
                 if (a2.getMinutosSaida() == (23 * 60 + 59)) {
-
-                    //a2.setMinutosEntrada(a1.getMinutosEntrada());
-                    //a2.setMinutosSaida(a1.getMinutosSaida());
                     p = new Periodo(a2.getMinutosEntrada(), a1.getMinutosSaida());
                     atrasos.set(j, p);
                     if (a1.getMinutosEntrada() == 0) {
