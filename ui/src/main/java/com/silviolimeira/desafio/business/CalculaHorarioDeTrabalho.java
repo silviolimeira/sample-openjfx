@@ -15,6 +15,150 @@ public class CalculaHorarioDeTrabalho {
 
     public CalculaHorarioDeTrabalho() {}
 
+    public boolean testaIntersecaoPeriodos(Periodo periodo, ObservableList<Periodo> periodos) {
+        Periodo pt;
+        try {
+            int max = periodos.size();
+            for (int i = 0; i < max; i++) {
+                Periodo periodoTrabalho = periodos.get(i);
+//            System.out.print("periodo - " + i + ": " + periodo.toString());
+//            System.out.print(" item: " + item.toString());
+//            System.out.println(" max: " + max);
+                int pte = periodoTrabalho.getMinutosEntrada();
+                int pts = periodoTrabalho.getMinutosSaida();
+                if (pte > pts) {
+                    if (pts > 0) {
+                        pt = new Periodo(
+                                "00:00",
+                                String.format("%02d:%02d", pts / 60, pts % 60)
+                        );
+                        if (intersecao(periodo,pt) > 0)
+                            return false;
+
+                    }
+                    pt = new Periodo(
+                            String.format("%02d:%02d", pte / 60, pte % 60),
+                            "23:59"
+                    );
+                    if (intersecao(periodo,pt) > 0)
+                        return false;
+                } else {
+                    if (intersecao(periodo,periodoTrabalho) > 0)
+                        return false;
+                }
+
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("teste ex");
+            return false;
+        }
+        System.out.println("teste9");
+        return true;
+    }
+
+    public void calculaHoraExtraAtraso(WorkScheduleReport horaExtra, WorkScheduleReport atraso, WorkSchedule horarioDeTrabalho, WorkSchedule marcacoes) {
+
+        //WorkScheduleReport periodosHoraExtra = new WorkScheduleReport();
+        try {
+            int maxMarcacoes = marcacoes.getTable().getItems().size();
+
+            for (int j = 0; j < maxMarcacoes; j++) {
+
+                Periodo marcacao = marcacoes.getTable().getItems().get(j);
+
+                // calcula atraso
+                atraso.getTable().getItems().clear();
+
+                calcMarcacoes(horarioDeTrabalho.getTable().getItems(),
+                        marcacoes.getTable().getItems(),
+                        atraso.getTable().getItems(),
+                        horaExtra.getTable().getItems());
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+/////////////////////////////////////////////////////////
+
+    public static void calculaHoraExtra(Periodo horarioTrabalho, List<Periodo> marcacoes, List<Periodo> horasExtras) {
+        int max = marcacoes.size();
+        if (max == 0) return ;
+        Periodo marcacao;
+        Periodo pm;
+        Periodo ma = null;
+        int mpe = 0;
+        int mas = 0;
+        for (int i = 0; i < max; i++) {
+            marcacao = marcacoes.get(i);
+            mas = -1;
+            if (i - 1 >= 0) {
+                ma = marcacoes.get(i - 1);
+                mas = marcacoes.get(i - 1).getMinutosSaida();
+            }
+            mpe = -1;
+            if (i + 1 < max) {
+                pm = marcacoes.get(i + 1);
+                mpe = marcacoes.get(i + 1).getMinutosEntrada();
+            }
+
+            int me = marcacao.getMinutosEntrada();
+            int ms = marcacao.getMinutosSaida();
+            int he = horarioTrabalho.getMinutosEntrada();
+            int hs = horarioTrabalho.getMinutosSaida();
+            Periodo periodoExtra;
+
+            int inters = intersecao(marcacao, horarioTrabalho);
+
+            int e = 0;
+            int s = 0;
+
+            if ((inters & 0x01) == 0x01) {
+                //System.out.println("### Marcacao: " + marcacao.toString() + " ..............." + " horarioTrabalho: " + horarioTrabalho.toString());
+                if (me > he && me < hs) {
+                    e = me;
+                    String mas_s = String.format("%02d:%02d", mas / 60, mas % 60);
+                    String he_s = String.format("%02d:%02d", he / 60, he % 60);
+                    if (mas > 0 && mas > he && mas > me) e = mas;
+                    if (ms < hs) {
+                        periodoExtra = new Periodo(e, ms);
+                    } else {
+                        periodoExtra = new Periodo(e, hs);
+                    }
+                    if (horasExtras.indexOf(periodoExtra) == -1) {
+                        horasExtras.add(periodoExtra);
+                        continue ;
+                    }
+                }
+            }
+            if ((inters & 0x02) == 0x02) {
+                //System.out.println("### Marcacao: " + marcacao.toString() + " ..............." + " horarioTrabalho: " + horarioTrabalho.toString());
+                if (ms < hs && ms > he) {
+                    s = hs;
+                    String ms_s = String.format("%02d:%02d", ms / 60, ms % 60);
+                    String mpe_s = String.format("%02d:%02d", mpe / 60, mpe % 60);
+                    String hs_s = String.format("%02d:%02d", hs / 60, hs % 60);
+                    if (mpe > 0 && mpe < hs) s = mpe;
+                    //String s_s = String.format("%02d:%02d", s / 60, s % 60);
+                    periodoExtra = new Periodo(he, ms);
+                    //System.out.println("       -1 Atraso: " + a.toString());
+                    if (horasExtras.indexOf(periodoExtra) == -1) {
+                        horasExtras.add(periodoExtra);
+                    }
+                }
+            }
+
+        }
+    }
+
+
+
     public static void calculaAtraso(Periodo horarioTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
         int max = marcacoes.size();
         if (max == 0) return ;
@@ -44,8 +188,7 @@ public class CalculaHorarioDeTrabalho {
             int inters = intersecao(marcacao, horarioTrabalho);
             if (intersecao(marcacao, horarioTrabalho) > 0) {
                 //System.out.println("### Calcula atraso ###");
-                System.out.println("### Marcacao: " + marcacao.toString() + " ..............." + " horarioTrabalho: " + horarioTrabalho.toString());
-
+                //System.out.println("### Marcacao: " + marcacao.toString() + " ..............." + " horarioTrabalho: " + horarioTrabalho.toString());
 
                 int e = 0;
                 int s = 0;
@@ -55,7 +198,7 @@ public class CalculaHorarioDeTrabalho {
                     String he_s = String.format("%02d:%02d", he / 60, he % 60);
                     if (mas > 0 && mas > he) e = mas;
                     a = new Periodo(e, me);
-                    System.out.println("       -1 Atraso: " + a.toString());
+                    //System.out.println("       -1 Atraso: " + a.toString());
                     if (atrasos.indexOf(a) == -1) {
                         atrasos.add(a);
                     }
@@ -108,6 +251,64 @@ public class CalculaHorarioDeTrabalho {
         return cnd;
     }
 
+    public static void verificaPeriodosHE(List<Periodo> periodosHoraExtra, List<Periodo> marcacoes, List<Periodo> horasExtras) {
+        Periodo m = null;
+        Periodo phe = null;
+        int max = periodosHoraExtra.size();
+        for (int i = 0; i < max; i++) {
+            phe = periodosHoraExtra.get(i);
+            int maxm = marcacoes.size();
+            boolean cnd = false;
+            for (int j = 0; j < maxm; j++) {
+                m = marcacoes.get(j);
+                int inter = intersecao(phe, m);
+                if (intersecao(phe,m) == 3) {
+                    //horasExtras.add(phe);
+                    cnd = true;
+                }
+//                inter = intersecao(ht, m);
+//                if (intersecao(ht, m) > 0) {
+//                    cnd = true;
+//                }
+            }
+            if (cnd == true) {
+                horasExtras.add(phe);
+            }
+        }
+
+        Periodo a1 = null;
+        Periodo a2 = null;
+        max = horasExtras.size();
+        int i = 0;
+        for (i = 0; i < max; i++) {
+            a1 = horasExtras.get(i);
+            if (a1.getMinutosEntrada() == 0) {
+                break;
+            }
+            a1 = null;
+        }
+        if (a1 != null) {
+
+            Periodo p = null;
+            max = horasExtras.size();
+            for (int j = 0; j < max; j++) {
+                a2 = horasExtras.get(j);
+                if (a2.getMinutosSaida() == (23 * 60 + 59)) {
+                    p = new Periodo(a2.getMinutosEntrada(), a1.getMinutosSaida());
+                    horasExtras.set(j, p);
+                    if (a1.getMinutosEntrada() == 0) {
+                        horasExtras.remove(i);
+                    }
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+
+
     public static void verificaPeriodos(List<Periodo> horarioTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
         Periodo ht = null;
         Periodo m = null;
@@ -115,19 +316,19 @@ public class CalculaHorarioDeTrabalho {
         for (int i = 0; i < max; i++) {
             ht = horarioTrabalho.get(i);
             int maxm = marcacoes.size();
-            Boolean cnd = true;
+            Boolean cnd = false;
             for (int j = 0; j < maxm; j++) {
                 m = marcacoes.get(j);
                 int inter = intersecao(m,ht);
                 if (intersecao(m,ht) > 0) {
-                    cnd = false;
+                    cnd = true;
                 }
-                inter = intersecao(ht,m);
-                if (intersecao(ht,m) > 0) {
-                    cnd = false;
+                inter = intersecao(ht, m);
+                if (intersecao(ht, m) > 0) {
+                    cnd = true;
                 }
             }
-            if (cnd == true) {
+            if (cnd == false) {
                 atrasos.add(ht);
             }
         }
@@ -141,23 +342,27 @@ public class CalculaHorarioDeTrabalho {
             if (a1.getMinutosEntrada() == 0) {
                 break;
             }
+            a1 = null;
         }
         if (a1 != null) {
-            if (a1.getMinutosEntrada() == 0) {
-                atrasos.remove(i);
+
+            Periodo p = null;
+            max = atrasos.size();
+            for (int j = 0; j < max; j++) {
+                a2 = atrasos.get(j);
+                if (a2.getMinutosSaida() == (23 * 60 + 59)) {
+
+                    //a2.setMinutosEntrada(a1.getMinutosEntrada());
+                    //a2.setMinutosSaida(a1.getMinutosSaida());
+                    p = new Periodo(a2.getMinutosEntrada(), a1.getMinutosSaida());
+                    atrasos.set(j, p);
+                    if (a1.getMinutosEntrada() == 0) {
+                        atrasos.remove(i);
+                    }
+                    break;
+                }
             }
-        }
-        Periodo p = null;
-        max = atrasos.size();
-        i = 0;
-        for (i = 0; i < max; i++) {
-            a2 = atrasos.get(i);
-            if (a2.getMinutosSaida() == (23 * 60 + 59)) {
-                a2.setMinutosSaida(a1.getMinutosSaida());
-                p = new Periodo(a2.getMinutosEntrada(), a1.getMinutosSaida());
-                atrasos.set(i, p);
-                break;
-            }
+
         }
 
     }
@@ -173,10 +378,14 @@ public class CalculaHorarioDeTrabalho {
             int pe = periodo.getMinutosEntrada();
             int ps = periodo.getMinutosSaida();
             if (pe > ps) {
-                p = new Periodo(pe, 23 * 60 + 59);
-                periodosNorm.add(p);
-                p = new Periodo(0, ps);
-                periodosNorm.add(p);
+                if (pe < 23 * 60 + 59) {
+                    p = new Periodo(pe, 23 * 60 + 59);
+                    periodosNorm.add(p);
+                }
+                if (ps > 0) {
+                    p = new Periodo(0, ps);
+                    periodosNorm.add(p);
+                }
             } else {
                 periodosNorm.add(periodo);
             }
@@ -199,17 +408,20 @@ public class CalculaHorarioDeTrabalho {
         }
     }
 
-    public static void calcAtrasoMarcacoes(List<Periodo> horarioDeTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos) {
+    public static void calcMarcacoes(List<Periodo> horarioDeTrabalho, List<Periodo> marcacoes, List<Periodo> atrasos, List<Periodo> horasExtras) {
 
         Periodo marcacao = null;
         Periodo atraso = null;
 
-        System.out.println("=============== ### Calcula Atraso Marcacoes: ### =========================");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("=============== ### Calcula Marcacoes: ### ================================");
         ordenaPeriodos(horarioDeTrabalho);
         System.out.println("Horario de trabalho: " + horarioDeTrabalho);
         ordenaPeriodos(marcacoes);
         System.out.println("Marcacoes          : " + marcacoes);
         System.out.println("===========================================================================");
+
 
         List<Periodo> horarioTrabalhoNorm = normalizaPeriodos(horarioDeTrabalho);
         ordenaPeriodos(horarioTrabalhoNorm);
@@ -225,323 +437,460 @@ public class CalculaHorarioDeTrabalho {
         Periodo p = null;
         Periodo ht = null;
 
+        int maxht = 0;
         atrasos.clear();
-
-        int maxht = horarioTrabalhoNorm.size();
+        // calcula atrasos
+        maxht = horarioTrabalhoNorm.size();
         for (int j = 0; j < maxht; j++) {
             ht = horarioTrabalhoNorm.get(j);
-            //(hte > hts)
             calculaAtraso(ht, marcacoesNorm, atrasos);
-            //System.out.println("atrasos: " + atrasos);
-            //System.out.println("");
-
         }
         verificaPeriodos(horarioTrabalhoNorm, marcacoes, atrasos);
-
-
         System.out.println("** Atrasos: " + atrasos);
+        System.out.println("");
 
-
-    }
-
-    public boolean testaIntersecaoPeriodos(Periodo periodo, ObservableList<Periodo> periodos) {
-        Periodo pt;
-        int max = periodos.size();
-        for (int i = 0; i < max; i++) {
-            Periodo periodoTrabalho = periodos.get(i);
-//            System.out.print("periodo - " + i + ": " + periodo.toString());
-//            System.out.print(" item: " + item.toString());
-//            System.out.println(" max: " + max);
-            int pte = periodoTrabalho.getMinutosEntrada();
-            int pts = periodoTrabalho.getMinutosSaida();
-            if (pte > pts) {
-                pt = new Periodo(
-                        "00:00",
-                        String.format("%02d:%02d", pts / 60, pts % 60)
-                );
-                if (intersecao(periodo,pt) > 0)
-                    return false;
-                pt = new Periodo(
-                        String.format("%02d:%02d", pte / 60, pte % 60),
-                        "23:59"
-                );
-                if (intersecao(periodo,pt) > 0)
-                    return false;
+//        List<Periodo> marcacoesNorm = normalizaPeriodos(marcacoes);
+//        ordenaPeriodos(marcacoesNorm);
+        horasExtras.clear();
+        List<Periodo> periodosHoraExtra =  new ArrayList<>();
+        maxht = horarioTrabalhoNorm.size();
+        Periodo hta = null;
+        int j = 0;
+        for (j = 0; j < maxht; j++) {
+            ht = horarioTrabalhoNorm.get(j);
+            if (j == 0) {
+                if (ht.getMinutosEntrada() > 0) {
+                    p = new Periodo(0, ht.getMinutosEntrada());
+                    periodosHoraExtra.add(p);
+                }
             } else {
-                if (intersecao(periodo,periodoTrabalho) > 0)
-                    return false;
+                hta = horarioTrabalhoNorm.get(j - 1);
+                p = new Periodo(hta.getMinutosSaida(), ht.getMinutosEntrada());
+                periodosHoraExtra.add(p);
+
             }
-
         }
-        return true;
-    }
-
-    public void diferencaHoraExtra(Periodo p, Periodo periodoHoraExtra, ObservableList<Periodo> horaExtra) {
-        int pe = p.getMinutosEntrada();
-        int ps = p.getMinutosSaida();
-        int hei = periodoHoraExtra.getMinutosEntrada();
-        int hef = periodoHoraExtra.getMinutosSaida();
-        Periodo he = null;
-        if (pe >= hei && ps <= hef) {
-            he = new Periodo(
-                    String.format("%02d:%02d", pe / 60, pe % 60),
-                    String.format("%02d:%02d", ps / 60, ps % 60)
-            );
-            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
-                horaExtra.add(he);
-            }
-        } else if (pe < hei && (ps >= hei && ps <= hef)) {
-            he = new Periodo(
-                    String.format("%02d:%02d",hei / 60, hei % 60),
-                    String.format("%02d:%02d", ps / 60, ps % 60)
-            );
-            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
-                horaExtra.add(he);
-            }
-
-        } else if ((pe >= hei && pe <= hef) && ps > hef) {
-            he = new Periodo(
-                    String.format("%02d:%02d", pe / 60, pe % 60),
-                    String.format("%02d:%02d", hef / 60, hef % 60)
-            );
-            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
-                horaExtra.add(he);
-            }
-
-        } else if (pe < hei && ps > hef) {
-            he = new Periodo(
-                    String.format("%02d:%02d", hei / 60, hei % 60),
-                    String.format("%02d:%02d", hef / 60, hef % 60)
-            );
-            if (he.getMinutosEntrada() != he.getMinutosSaida()) {
-                horaExtra.add(he);
-            }
-
-
+        ht = horarioTrabalhoNorm.get(j - 1);
+        if (ht.getHoraSaida() != 23 && ht.getMinutoSaida() != 59) {
+            p = new Periodo(ht.getMinutosSaida(), 23 * 60 + 59); //
+            periodosHoraExtra.add(p);
         }
-    }
 
-    public void calculaHoraExtra(Periodo p, ObservableList<Periodo> horaExtra) {
-        System.out.println("     Calcula Hora Extra - periodo: " + p.toString() + " ");
+        //System.out.println("Periodos Horas Extras: " + periodosHoraExtra);
 
-        int max = periodosHoraExtra.getTableAsList().size();
-        for (int i = 0; i < max; i++) {
-            Periodo phe = periodosHoraExtra.getTableAsList().get(i);
-
-            int pe = p.getMinutosEntrada();
-            int ps = p.getMinutosSaida();
-            int hei = phe.getMinutosEntrada();
-            int hef = phe.getMinutosSaida();
-            Periodo he = null;
-
-            System.out.println("       " + i+1 + ": P.h.e: " + phe.toString() + " ===========");
-            if (pe > ps) {
-                p = new Periodo("00:00", String.format("%02d:%02d", ps / 60, ps % 60));
-                int pe1 = p.getMinutosEntrada();
-                int ps1 = p.getMinutosSaida();
-                System.out.println("          p1: " + p.toString());
-                diferencaHoraExtra(p, phe, horaExtra);
-
-                p = new Periodo(String.format("%02d:%02d", pe / 60, pe % 60), "23:59");
-                int pe2 = p.getMinutosEntrada();
-                int ps2 = p.getMinutosSaida();
-                System.out.println("          p2: " + p.toString());
-                diferencaHoraExtra(p, phe, horaExtra);
-
-            } else {
-                diferencaHoraExtra(p, phe, horaExtra);
-            }
-
-
+        // calcula Horas Extras
+        int maxphe = periodosHoraExtra.size();
+        Periodo phe = null;
+        for (j = 0; j < maxphe; j++) {
+            phe = periodosHoraExtra.get(j);
+            calculaHoraExtra(phe, marcacoesNorm, horasExtras);
         }
-    }
+        verificaPeriodosHE(periodosHoraExtra, marcacoes, horasExtras);
+        ordenaPeriodos(horasExtras);
 
-    public void calculaHoraExtraAtraso(WorkScheduleReport horaExtra, WorkScheduleReport atraso, WorkSchedule horarioDeTrabalho, WorkSchedule marcacoes) {
+        System.out.println("** Horas Extras: " + horasExtras);
 
-        //WorkScheduleReport periodosHoraExtra = new WorkScheduleReport();
-
-        int maxMarcacoes = marcacoes.getTable().getItems().size();
-
-        for (int j = 0; j < maxMarcacoes; j++) {
-
-            Periodo marcacao = marcacoes.getTable().getItems().get(j);
-
-            // calcula hora extra
-            calculaHoraExtra(marcacao, horaExtra.getTable().getItems());
-
-            // calcula atraso
-            atraso.getTable().getItems().clear();
-//            calcAtrasoMarcacoes(horarioDeTrabalho.getTable().getItems(),
-//                    marcacoes.getTable().getItems(),
-//                    atraso.getTable().getItems());
-
-            calcAtrasoMarcacoes(horarioDeTrabalho.getTable().getItems(),
-                    marcacoes.getTable().getItems(),
-                    atraso.getTable().getItems());
-
-        }
 
     }
 
 
+    public static void main(String[] args) {
+        //System.out.println("Atrasos ***");
+
+        List<Periodo> horarioDeTrabalho = new ArrayList<>();
+        List<Periodo> marcacoes = new ArrayList<>();
+        List<Periodo> atrasos = new ArrayList<>();
+        List<Periodo> horasExtras = new ArrayList<>();
 
 
-    public void calcPeriodoHoraExtra(Periodo ht, WorkScheduleReport periodosHoraExtra) {
-        int hexe = ht.getMinutosEntrada();
-        int hexs = ht.getMinutosSaida();
-        Periodo p1;
-        Periodo p2;
-        if (hexe < hexs) {
-            p1 = new Periodo(
-                    "00:00", String.format("%02d:%02d", hexe / 60, hexe % 60));
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "05:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("22:00", "01:00"));
+//            marcacoes.add(new Periodo("02:00", "06:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("20:00", "22:00"));
+//            marcacoes.add(new Periodo("06:00", "07:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//
+//        }
 
-            p2 = new Periodo(
-                    String.format("%02d:%02d", hexs / 60, hexs % 60), "23:59");
-            periodosHoraExtra.getTable().getItems().add(p1);
-            periodosHoraExtra.getTable().getItems().add(p2);
-        } else {
-            p1 = new Periodo(
-                    String.format("%02d:%02d", hexs / 60, hexs % 60),
-                    String.format("%02d:%02d", hexe / 60, hexe % 60));
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("08:00", "11:00"));
+//            marcacoes.add(new Periodo("14:00", "17:00"));
+//            marcacoes.add(new Periodo("20:00", "21:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("06:00", "10:00"));
+//            marcacoes.add(new Periodo("12:00", "16:00"));
+//            marcacoes.add(new Periodo("18:00", "20:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//
+//        }
 
-            periodosHoraExtra.getTable().getItems().add(p1);
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("08:00", "13:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("08:00", "09:30"));
+//            marcacoes.add(new Periodo("10:30", "12:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("06:00", "08:00"));
+//            marcacoes.add(new Periodo("12:00", "13:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("06:00", "07:30"));
+//            marcacoes.add(new Periodo("08:15", "10:00"));
+//            marcacoes.add(new Periodo("10:10", "11:35"));
+//            marcacoes.add(new Periodo("11:50", "12:45"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//        }
+
+
+
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
+//            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
+//            marcacoes.add(new Periodo("22:00", "01:00"));
+//            marcacoes.add(new Periodo("02:00", "06:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
+//            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "00:00"));
+//            marcacoes.add(new Periodo("01:00", "05:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//        }
+
+//        {
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            marcacoes.add(new Periodo("13:00", "17:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("09:00", "13:00"));
+//            marcacoes.add(new Periodo("15:00", "19:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("19:00", "21:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//        }
+
+//        {
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("08:00", "11:00"));
+//            marcacoes.add(new Periodo("14:00", "17:00"));
+//            marcacoes.add(new Periodo("20:00", "21:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("06:00", "10:00"));
+//            marcacoes.add(new Periodo("12:00", "16:00"));
+//            marcacoes.add(new Periodo("18:00", "20:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//        }
+
+
+        // no email
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("13:30", "17:30"));
+//            marcacoes.add(new Periodo("06:00", "20:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("13:30", "17:30"));
+//            marcacoes.add(new Periodo("07:00", "12:30"));
+//            marcacoes.add(new Periodo("14:00", "17:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+//
+//
+//        }
+        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("21:00", "04:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("03:00", "07:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("21:00", "04:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("03:00", "07:00"));
+//            calcAtrasoMarcacoes(horarioDeTrabalho,marcacoes,atrasos);
+
+
+            // do email
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("13:30", "17:30"));
+//            marcacoes.add(new Periodo("06:00", "20:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("13:30", "17:30"));
+//            marcacoes.add(new Periodo("07:00", "12:30"));
+//            marcacoes.add(new Periodo("14:00", "17:00"));
+//            calcMarcacoes(horarioDeTrabalho, marcacoes, atrasos, horasExtras);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("21:00", "04:00"));
+//            calcMarcacoes(horarioDeTrabalho, marcacoes, atrasos, horasExtras);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
+//            marcacoes.add(new Periodo("03:00", "07:00"));
+//            calcMarcacoes(horarioDeTrabalho, marcacoes, atrasos, horasExtras);
+
+            //da planilha
+
+//            // simulação 1
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("08:00", "13:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("08:00", "09:30"));
+//            marcacoes.add(new Periodo("10:30", "12:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("06:00", "08:00"));
+//            marcacoes.add(new Periodo("12:00", "13:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("06:00", "07:30"));
+//            marcacoes.add(new Periodo("08:15", "10:00"));
+//            marcacoes.add(new Periodo("10:10", "11:35"));
+//            marcacoes.add(new Periodo("11:50", "12:45"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+//            // simulação 2
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            marcacoes.add(new Periodo("13:00", "17:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("09:00", "13:00"));
+//            marcacoes.add(new Periodo("15:00", "19:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("08:00", "12:00"));
+//            horarioDeTrabalho.add(new Periodo("14:00", "18:00"));
+//            marcacoes.add(new Periodo("08:00", "12:00"));
+//            marcacoes.add(new Periodo("19:00", "21:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+//            // simulação 3
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("07:00", "11:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("08:00", "11:00"));
+//            marcacoes.add(new Periodo("14:00", "17:00"));
+//            marcacoes.add(new Periodo("20:00", "21:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("07:00", "11:00"));
+//            horarioDeTrabalho.add(new Periodo("13:00", "17:00"));
+//            horarioDeTrabalho.add(new Periodo("19:00", "21:00"));
+//            marcacoes.add(new Periodo("06:00", "10:00"));
+//            marcacoes.add(new Periodo("12:00", "16:00"));
+//            marcacoes.add(new Periodo("18:00", "20:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+            // simulação 4
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "05:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("22:00", "01:00"));
+//            marcacoes.add(new Periodo("02:00", "06:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+            horarioDeTrabalho.clear();
+            marcacoes.clear();
+            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+            marcacoes.add(new Periodo("20:00", "22:00"));
+            marcacoes.add(new Periodo("06:00", "07:00"));
+            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("20:00", "01:00"));
+//            marcacoes.add(new Periodo("02:00", "07:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+            // simulação 5
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
+//            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
+//            marcacoes.add(new Periodo("22:00", "01:00"));
+//            marcacoes.add(new Periodo("02:00", "06:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
+//            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "00:00"));
+//            marcacoes.add(new Periodo("01:00", "05:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
         }
+
+
+
     }
-
-    public void calcPeriodoHoraExtra(Periodo ht1, Periodo ht2, WorkScheduleReport periodosHoraExtra) {
-        int hexe0 = 0;
-        int hexs0 = 0;
-        int hexe1 = 0;
-        int hexs1 = 0;
-        int hexe2 = 0;
-        int hexs2 = 0;
-        Periodo p = null;
-        if (ht2.getMinutosEntrada() < ht2.getMinutosSaida()) {
-            hexe0 = 0;
-            hexs0 = ht1.getMinutosEntrada();
-            hexe1 = ht1.getMinutosSaida();
-            hexs1 = ht2.getMinutosEntrada();
-            hexe2 = ht2.getMinutosSaida();
-            hexs2 = 23 * 60 + 59;
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe0 / 60, hexe0 % 60),
-                    String.format("%02d:%02d", hexs0 / 60, hexs0 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe1 / 60, hexe1 % 60),
-                    String.format("%02d:%02d", hexs1 / 60, hexs1 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe2 / 60, hexe2 % 60),
-                    String.format("%02d:%02d", hexs2 / 60, hexs2 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-        } else {
-            hexe0 = ht2.getMinutosSaida();
-            hexs0 = ht1.getMinutosEntrada();
-            hexe1 = ht1.getMinutosSaida();
-            hexs1 = ht2.getMinutosEntrada();
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe0 / 60, hexe0 % 60),
-                    String.format("%02d:%02d", hexs0 / 60, hexs0 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe1 / 60, hexe1 % 60),
-                    String.format("%02d:%02d", hexs1 / 60, hexs2 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-        }
-        System.out.println("Periodos Hora Extra ** : " + periodosHoraExtra.getTableAsList().toString());
-
-    }
-
-    public void calcPeriodoHoraExtra(Periodo ht1, Periodo ht2, Periodo ht3, WorkScheduleReport periodosHoraExtra)
-    {
-        Periodo p = null;
-        int hexe0 = 0;
-        int hexs0 = 0;
-        int hexe1 = 0;
-        int hexs1 = 0;
-        int hexe2 = 0;
-        int hexs2 = 0;
-        int hexe3 = 0;
-        int hexs3 = 0;
-
-        if (ht3.getMinutosEntrada() < ht3.getMinutosSaida()) {
-            hexe0 = 0;
-            hexs0 = ht1.getMinutosEntrada();
-            hexe1 = ht1.getMinutosSaida();
-            hexs1 = ht2.getMinutosEntrada();
-            hexe2 = ht2.getMinutosSaida();
-            hexs2 = ht3.getMinutosEntrada();
-            hexe3 = ht3.getMinutosSaida();
-            hexs3 = 23 * 60 + 59;
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe0 / 60, hexe0 % 60),
-                    String.format("%02d:%02d", hexs0 / 60, hexs0 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe1 / 60, hexe1 % 60),
-                    String.format("%02d:%02d", hexs1 / 60, hexs1 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe2 / 60, hexe2 % 60),
-                    String.format("%02d:%02d", hexs2 / 60, hexs2 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe3 / 60, hexe3 % 60),
-                    String.format("%02d:%02d", hexs3 / 60, hexs3 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-        }
-        else {
-            hexe0 = ht3.getMinutosSaida();
-            hexs0 = ht1.getMinutosEntrada();
-            hexe1 = ht1.getMinutosSaida();
-            hexs1 = ht2.getMinutosEntrada();
-            hexe2 = ht2.getMinutosSaida();
-            hexs2 = ht3.getMinutosEntrada();
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe0 / 60, hexe0 % 60),
-                    String.format("%02d:%02d", hexs0 / 60, hexs0 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe1 / 60, hexe1 % 60),
-                    String.format("%02d:%02d", hexs1 / 60, hexs1 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-            p = new Periodo(
-                    String.format("%02d:%02d", hexe2 / 60, hexe2 % 60),
-                    String.format("%02d:%02d", hexs2 / 60, hexs2 % 60));
-            periodosHoraExtra.getTable().getItems().add(p);
-        }
-        System.out.println("Periodos Hora Extra: " + periodosHoraExtra.getTableAsList().toString());
-    }
-
-    public void calcPeriodosHoraExtra(ObservableList<Periodo> horarioDeTrabalho) {
-        int max = 0;
-        max = horarioDeTrabalho.size();
-
-        periodosHoraExtra.getTable().getItems().clear();
-
-        if (max == 1) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            calcPeriodoHoraExtra(ht1, periodosHoraExtra);
-            System.out.println("Calc periodos hora extra: 1");
-        }
-        if (max == 2) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            Periodo ht2 = horarioDeTrabalho.get(1);
-            calcPeriodoHoraExtra(ht1, ht2, periodosHoraExtra);
-            System.out.println("Calc periodos hora extra: 2");
-        }
-        if (max == 3) {
-            Periodo ht1 = horarioDeTrabalho.get(0);
-            Periodo ht2 = horarioDeTrabalho.get(1);
-            Periodo ht3 = horarioDeTrabalho.get(2);
-            calcPeriodoHoraExtra(ht1, ht2, ht3, periodosHoraExtra);
-            System.out.println("Calc periodos hora extra: 3");
-        }
-
-    }
-
-
-
 
 }
