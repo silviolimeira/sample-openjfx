@@ -251,11 +251,16 @@ public class CalculaHorarioDeTrabalho {
         return cnd;
     }
 
-    public static void verificaPeriodosHE(List<Periodo> periodosHoraExtra, List<Periodo> marcacoes, List<Periodo> horasExtras) {
+    public static void verificaPeriodosHE(List<Periodo> periodosHoraExtra, List<Periodo> marcacoes, List<Periodo> horasExtras,List<Periodo> horarioTrabalhoNorm) {
         Periodo m = null;
         Periodo phe = null;
+
+        Periodo a1 = null;
+        Periodo a2 = null;
+
+        int i = 0;
         int max = periodosHoraExtra.size();
-        for (int i = 0; i < max; i++) {
+        for (i = 0; i < max; i++) {
             phe = periodosHoraExtra.get(i);
             int maxm = marcacoes.size();
             boolean cnd = false;
@@ -268,14 +273,26 @@ public class CalculaHorarioDeTrabalho {
                 }
             }
             if (cnd == true) {
-                horasExtras.add(phe);
+                //horasExtras.add(phe);
+                int tamhtn = horarioTrabalhoNorm.size();
+                boolean cnd1 = false;
+                for (int k = 0; k < tamhtn; k++) {
+                    m = horarioTrabalhoNorm.get(k);
+                    if (intersecao(phe,m) == 0) {
+                        cnd1 = true;
+                    }
+                    if (phe.getMinutosEntrada() == m.getMinutosSaida()) {
+                        if (m.getMinutosEntrada() > 0)
+                            cnd1 = true;
+                    }
+                }
+                if (cnd1 == true) {
+                    horasExtras.add(phe);
+                }
             }
         }
 
-        Periodo a1 = null;
-        Periodo a2 = null;
         max = horasExtras.size();
-        int i = 0;
         for (i = 0; i < max; i++) {
             a1 = horasExtras.get(i);
             if (a1.getMinutosEntrada() == 0) {
@@ -300,6 +317,8 @@ public class CalculaHorarioDeTrabalho {
             }
 
         }
+
+
 
     }
 
@@ -478,7 +497,7 @@ public class CalculaHorarioDeTrabalho {
             phe = periodosHoraExtra.get(j);
             calculaHoraExtra(phe, marcacoesNorm, horasExtras);
         }
-        verificaPeriodosHE(periodosHoraExtra, marcacoes, horasExtras);
+        verificaPeriodosHE(periodosHoraExtra, marcacoes, horasExtras, horarioTrabalhoNorm);
         ordenaPeriodos(horasExtras);
 
         System.out.println("** Horas Extras: " + horasExtras);
@@ -552,6 +571,7 @@ public class CalculaHorarioDeTrabalho {
 //
 //        }
 
+        // planinha 1
 //        {
 //            horarioDeTrabalho.clear();
 //            marcacoes.clear();
@@ -689,7 +709,7 @@ public class CalculaHorarioDeTrabalho {
 //
 //
 //        }
-        {
+//        {
 //            horarioDeTrabalho.clear();
 //            marcacoes.clear();
 //            horarioDeTrabalho.add(new Periodo("22:00", "05:00"));
@@ -849,12 +869,12 @@ public class CalculaHorarioDeTrabalho {
 //            marcacoes.add(new Periodo("02:00", "06:00"));
 //            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
 
-            horarioDeTrabalho.clear();
-            marcacoes.clear();
-            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
-            marcacoes.add(new Periodo("20:00", "22:00"));
-            marcacoes.add(new Periodo("06:00", "07:00"));
-            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("20:00", "22:00"));
+//            marcacoes.add(new Periodo("06:00", "07:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
 //
 //            horarioDeTrabalho.clear();
 //            marcacoes.clear();
@@ -872,15 +892,32 @@ public class CalculaHorarioDeTrabalho {
 //            marcacoes.add(new Periodo("02:00", "06:00"));
 //            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
 
+            horarioDeTrabalho.clear();
+            marcacoes.clear();
+            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
+            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
+            marcacoes.add(new Periodo("21:00", "00:00"));
+            marcacoes.add(new Periodo("01:00", "05:00"));
+            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+
+//            //simulação 4a ultima
 //            horarioDeTrabalho.clear();
 //            marcacoes.clear();
-//            horarioDeTrabalho.add(new Periodo("22:00", "01:00"));
-//            horarioDeTrabalho.add(new Periodo("02:00", "06:00"));
-//            marcacoes.add(new Periodo("21:00", "00:00"));
-//            marcacoes.add(new Periodo("01:00", "05:00"));
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "06:00"));
 //            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
 
-        }
+
+//        }
+
+          //simulação 4a ultima
+//        {
+//            horarioDeTrabalho.clear();
+//            marcacoes.clear();
+//            horarioDeTrabalho.add(new Periodo("22:00", "06:00"));
+//            marcacoes.add(new Periodo("21:00", "06:00"));
+//            calcMarcacoes(horarioDeTrabalho,marcacoes,atrasos, horasExtras);
+//        }
 
 
 

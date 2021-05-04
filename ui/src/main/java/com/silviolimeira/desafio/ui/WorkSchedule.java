@@ -227,6 +227,7 @@ public class WorkSchedule {
                 saida.clear();
                 data.clear();
                 setUpdated(true);
+
             }
         });
 
